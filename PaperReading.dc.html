@@ -51,7 +51,7 @@
 
   <!-- NAV -->
   <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid #E7EAF3;">
-    <nav style="max-width:1080px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;gap:16px;">
+    <nav style="max-width:min(1680px,94vw);margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;gap:16px;">
       <a href="Home.dc.html" style="display:flex;align-items:center;gap:11px;flex:0 0 auto;">
         <span style="display:inline-flex;width:36px;height:36px;border-radius:50%;background:#003087;align-items:center;justify-content:center;border:2px solid #D1A73B;flex:0 0 auto;"><span style="font-family:'Newsreader',Georgia,serif;font-weight:600;color:#fff;font-size:20px;line-height:1;">V</span></span>
         <span style="display:flex;flex-direction:column;line-height:1;">
@@ -72,7 +72,7 @@
 
   <!-- PAGE HEADER -->
   <section style="background:#003087;color:#fff;border-bottom:3px solid #D1A73B;">
-    <div style="max-width:1080px;margin:0 auto;padding:40px 28px 44px;">
+    <div style="max-width:min(1680px,94vw);margin:0 auto;padding:40px 28px 44px;">
       <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#D1A73B;margin-bottom:12px;">Paper Reading <span>★</span> <span style="margin-left:6px;font-size:10px;background:rgba(255,255,255,.14);padding:3px 9px;border-radius:20px;letter-spacing:.08em;">🔒 Members only</span></div>
       <h1 class="detail-h1" style="font-size:38px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;max-width:760px;line-height:1.1;">Weekly reading group</h1>
       <p style="font-size:16px;line-height:1.5;color:#C9D4EC;margin:0;max-width:640px;">Internal notes from our group's paper discussions. Sign in with GitHub to view — only lab collaborators have access. 📚</p>
@@ -135,7 +135,7 @@
 
       <!-- MEMBER BAR -->
       <div style="background:#fff;border-bottom:1px solid #E7EAF3;">
-        <div style="max-width:1080px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div style="max-width:min(1680px,94vw);margin:0 auto;padding:12px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
           <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#1F6B3B;font-weight:600;">🔓 Signed in — {{ memberLabel }}</div>
           <div style="display:flex;align-items:center;gap:12px;">
             <button onClick="{{ toggleSubmit }}" style="display:inline-flex;align-items:center;gap:7px;background:#D1A73B;color:#1A1A2E;font-weight:700;font-size:13px;padding:9px 16px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;">➕ Submit a session</button>
@@ -147,7 +147,7 @@
       <!-- SUBMIT PANEL -->
       <sc-if value="{{ showSubmit }}">
         <section style="background:#fff;border-bottom:1px solid #E7EAF3;">
-          <div style="max-width:1080px;margin:0 auto;padding:22px 28px;">
+          <div style="max-width:min(1680px,94vw);margin:0 auto;padding:22px 28px;">
             <div style="background:#F8F9FA;border:1px solid #E1E6F0;border-radius:16px;padding:26px;">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
                 <h2 style="font-size:19px;font-weight:800;margin:0;color:#1A1A2E;">➕ Submit a reading session</h2>
@@ -183,17 +183,17 @@
 
       <!-- CONTENT STATES -->
       <sc-if value="{{ isLoading }}">
-        <div style="max-width:1080px;margin:0 auto;padding:50px 28px;color:#8A90A6;font-size:14px;">Loading sessions…</div>
+        <div style="max-width:min(1680px,94vw);margin:0 auto;padding:50px 28px;color:#8A90A6;font-size:14px;">Loading sessions…</div>
       </sc-if>
       <sc-if value="{{ hasError }}">
-        <div style="max-width:1080px;margin:0 auto;padding:40px 28px;">
+        <div style="max-width:min(1680px,94vw);margin:0 auto;padding:40px 28px;">
           <div style="background:#FFF5F6;border:1px solid #F3C6CC;border-radius:12px;padding:20px 22px;color:#9B2330;font-size:14px;line-height:1.55;">⚠️ Couldn't load reading sessions. On the deployed site this fetches the index from the private content repo.</div>
         </div>
       </sc-if>
 
       <sc-if value="{{ isReady }}">
         <section style="background:#F4F6FA;">
-          <div class="detail-pr-layout" style="max-width:1080px;margin:0 auto;padding:28px;display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start;">
+          <div class="detail-pr-layout" style="max-width:min(1680px,94vw);margin:0 auto;padding:28px;display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start;">
             <aside class="detail-pr-side" style="position:sticky;top:88px;max-height:calc(100vh - 110px);overflow-y:auto;display:flex;flex-direction:column;gap:14px;">
               <input value="{{ query }}" onInput="{{ onSearch }}" placeholder="Search sessions…" style="width:100%;border:1px solid #D8DEEC;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/>
               <div style="display:flex;flex-wrap:wrap;gap:7px;">
@@ -229,7 +229,7 @@
 
   <!-- FOOTER -->
   <footer style="background:#0A1430;color:#C9D4EC;">
-    <div style="max-width:1080px;margin:0 auto;padding:40px 28px 30px;display:flex;flex-wrap:wrap;gap:36px;justify-content:space-between;">
+    <div style="max-width:min(1680px,94vw);margin:0 auto;padding:40px 28px 30px;display:flex;flex-wrap:wrap;gap:36px;justify-content:space-between;">
       <div style="max-width:340px;">
         <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
           <span style="display:inline-flex;width:38px;height:38px;border-radius:50%;background:#fff;align-items:center;justify-content:center;border:2px solid #D1A73B;"><span style="font-family:'Newsreader',Georgia,serif;font-weight:600;color:#003087;font-size:21px;line-height:1;">V</span></span>
@@ -254,7 +254,7 @@
         </div>
       </div>
     </div>
-    <div style="border-top:1px solid rgba(255,255,255,.08);"><div style="max-width:1080px;margin:0 auto;padding:16px 28px;font-size:12px;color:#6B7BA3;">© 2026 DETAIL Lab · Villanova University</div></div>
+    <div style="border-top:1px solid rgba(255,255,255,.08);"><div style="max-width:min(1680px,94vw);margin:0 auto;padding:16px 28px;font-size:12px;color:#6B7BA3;">© 2026 DETAIL Lab · Villanova University</div></div>
   </footer>
 
 </div>

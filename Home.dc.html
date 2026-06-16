@@ -35,6 +35,15 @@
   .detail-navlinks{scrollbar-width:none;-webkit-overflow-scrolling:touch;}
   .detail-navlinks::-webkit-scrollbar{display:none;}
   .detail-navlinks a{flex:0 0 auto;}
+  @media (max-width:1024px){
+    .detail-statgrid{grid-template-columns:repeat(2,1fr)!important;}
+    .detail-pillars{grid-template-columns:repeat(2,1fr)!important;}
+  }
+  @media (max-width:820px){
+    .detail-gallery{grid-template-columns:1fr 1fr!important;}
+    .detail-herob{grid-template-columns:1fr!important;}
+    .detail-herob-panel{display:none!important;}
+  }
   @media (max-width:680px){
     .detail-brand-sub{display:none!important;}
     .detail-navlinks{gap:18px!important;justify-content:flex-start!important;padding-left:12px!important;}
@@ -50,7 +59,7 @@
 
   <!-- NAV -->
   <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid #E7EAF3;">
-    <nav style="max-width:1080px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;gap:16px;">
+    <nav style="max-width:min(1680px,94vw);margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;gap:16px;">
       <a href="Home.dc.html" style="display:flex;align-items:center;gap:11px;flex:0 0 auto;">
         <span style="display:inline-flex;width:36px;height:36px;border-radius:50%;background:#003087;align-items:center;justify-content:center;border:2px solid var(--accent,#D1A73B);flex:0 0 auto;">
           <span style="font-family:'Newsreader',Georgia,serif;font-weight:600;color:#fff;font-size:20px;line-height:1;">V</span>
@@ -88,7 +97,7 @@
         </g>
       </svg>
       <div style="position:absolute;inset:0;background:linear-gradient(105deg,rgba(0,32,90,.82) 0%,rgba(0,48,135,.55) 55%,rgba(0,48,135,.25) 100%);"></div>
-      <div style="position:relative;max-width:1080px;margin:0 auto;padding:0 28px;height:100%;display:flex;flex-direction:column;justify-content:center;">
+      <div style="position:relative;max-width:min(1680px,94vw);margin:0 auto;padding:0 28px;height:100%;display:flex;flex-direction:column;justify-content:center;">
         <div style="display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--accent,#D1A73B);margin-bottom:14px;"><span style="width:22px;height:1px;background:var(--accent,#D1A73B);display:inline-block;"></span>Villanova University · ECE</div>
         <h1 class="detail-hero-h1" style="max-width:760px;font-size:40px;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance;">Dependable, Efficient &amp; Intelligent Computing</h1>
         <p style="max-width:600px;font-size:17px;line-height:1.45;color:#C9D4EC;margin:0 0 22px;">Cross-layer AI/ML systems research: <strong style="color:#fff;font-weight:600;">robust, efficient, brain-inspired.</strong> 🧠</p>
@@ -100,9 +109,9 @@
     </div>
 
     <!-- HERO B: Split panel -->
-    <div style="position:absolute;inset:0;transition:opacity .9s ease;opacity:{{ heroBOp }};z-index:{{ heroBZ }};pointer-events:{{ heroBPe }};display:grid;grid-template-columns:1.15fr .85fr;">
+    <div class="detail-herob" style="position:absolute;inset:0;transition:opacity .9s ease;opacity:{{ heroBOp }};z-index:{{ heroBZ }};pointer-events:{{ heroBPe }};display:grid;grid-template-columns:1.15fr .85fr;">
       <div style="background:#003087;color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 28px;">
-        <div style="max-width:520px;margin-left:auto;width:100%;padding-left:max(0px,calc((100vw - 1080px)/2));">
+        <div style="max-width:520px;margin-left:auto;width:100%;padding-left:max(0px,calc((100vw - min(1680px,94vw))/2));">
           <div style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--accent,#D1A73B);margin-bottom:12px;">DETAIL Lab · Villanova ECE</div>
           <h1 class="detail-hero-h1" style="font-size:36px;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;">Engineering AI you can <span style="color:var(--accent,#D1A73B);">depend</span> on.</h1>
           <p style="font-size:16px;line-height:1.45;color:#C9D4EC;margin:0 0 22px;max-width:420px;">Robust, efficient, brain-inspired systems — from silicon faults to large models. ⚡</p>
@@ -112,7 +121,7 @@
           </div>
         </div>
       </div>
-      <div style="background:linear-gradient(160deg,#0A1F4E,#06163A);position:relative;overflow:hidden;">
+      <div class="detail-herob-panel" style="background:linear-gradient(160deg,#0A1F4E,#06163A);position:relative;overflow:hidden;">
         <svg viewBox="0 0 520 340" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;" aria-hidden="true">
           <g stroke="var(--accent,#D1A73B)" stroke-width="1.4" fill="none" opacity=".55" style="animation:detailDrift1 24s ease-in-out infinite;">
             <path d="M60 80 H220 V160 H380"/><path d="M60 200 H180 V260 H440"/><path d="M280 50 V130 H480"/><path d="M120 300 H320 V230"/>
@@ -130,7 +139,7 @@
         <g stroke="#003087" stroke-width="1" fill="none" opacity=".3" style="animation:detailDrift2 26s ease-in-out infinite;"><line x1="90" y1="60" x2="330" y2="160"/><line x1="330" y1="160" x2="240" y2="300"/><line x1="330" y1="160" x2="540" y2="100"/><line x1="540" y1="100" x2="480" y2="280"/></g>
         <g fill="var(--accent,#D1A73B)" style="animation:detailDrift1 22s ease-in-out infinite;"><circle cx="90" cy="60" r="5"/><circle cx="330" cy="160" r="8"/><circle cx="540" cy="100" r="5"/><circle cx="240" cy="300" r="5"/><circle cx="480" cy="280" r="6"/></g>
       </svg>
-      <div style="position:relative;max-width:1080px;margin:0 auto;padding:0 28px;height:100%;display:flex;flex-direction:column;justify-content:center;">
+      <div style="position:relative;max-width:min(1680px,94vw);margin:0 auto;padding:0 28px;height:100%;display:flex;flex-direction:column;justify-content:center;">
         <div style="width:46px;height:4px;background:var(--accent,#D1A73B);margin-bottom:16px;border-radius:2px;"></div>
         <h1 class="detail-hero-h1" style="font-family:'Newsreader',Georgia,serif;font-size:46px;line-height:1.04;font-weight:600;letter-spacing:-.02em;margin:0 0 10px;color:#003087;max-width:680px;text-wrap:balance;">Dependable, Efficient &amp; Intelligent Computing.</h1>
         <p style="font-size:17px;color:#5A6079;margin:0 0 22px;max-width:440px;line-height:1.45;">Cross-layer AI/ML systems research at Villanova ECE. 🔬</p>
@@ -145,7 +154,7 @@
     <div style="position:absolute;inset:0;transition:opacity .9s ease;opacity:{{ heroDOp }};z-index:{{ heroDZ }};pointer-events:{{ heroDPe }};background:#0A1430;overflow:hidden;">
       <img src="assets/lab-group-four.jpg" alt="DETAIL Lab group" style="width:100%;height:100%;object-fit:cover;object-position:center 28%;position:absolute;inset:0;display:block;"/>
       <div style="position:absolute;inset:0;background:linear-gradient(95deg,rgba(0,24,68,.92) 0%,rgba(0,32,90,.66) 42%,rgba(0,32,90,.12) 100%);"></div>
-      <div style="position:relative;max-width:1080px;margin:0 auto;padding:0 28px;height:100%;display:flex;flex-direction:column;justify-content:center;color:#fff;">
+      <div style="position:relative;max-width:min(1680px,94vw);margin:0 auto;padding:0 28px;height:100%;display:flex;flex-direction:column;justify-content:center;color:#fff;">
         <div style="display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--accent,#D1A73B);margin-bottom:14px;">🎓 Life in the Lab</div>
         <h1 class="detail-hero-h1" style="max-width:600px;font-size:38px;line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;">A community that ships research — and celebrates together.</h1>
         <p style="max-width:500px;font-size:16px;line-height:1.45;color:#D6DFF2;margin:0 0 22px;">Ten researchers across hardware, ML, and systems. 🥂</p>
@@ -166,7 +175,7 @@
 
   <!-- STATS strip (deeper navy + gold seam, compact) -->
   <section ref="{{ statsRef }}" style="background:#003087;border-top:3px solid var(--accent,#D1A73B);">
-    <div class="detail-statgrid" style="max-width:1080px;margin:0 auto;padding:14px 28px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;">
+    <div class="detail-statgrid" style="max-width:min(1680px,94vw);margin:0 auto;padding:14px 28px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;">
       <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
         <div style="display:flex;flex-direction:column;gap:1px;border-left:3px solid var(--accent,#D1A73B);padding-left:12px;">
           <div class="detail-stats-num" style="font-size:30px;font-weight:800;letter-spacing:-.02em;color:#fff;line-height:1.05;display:flex;align-items:baseline;">{{ stat.display }}<span style="color:var(--accent,#D1A73B);">{{ stat.suffix }}</span></div>
@@ -178,7 +187,7 @@
 
   <!-- LATEST NEWS — dense list -->
   <section style="background:#fff;">
-    <div style="max-width:1080px;margin:0 auto;padding:40px 28px 30px;">
+    <div style="max-width:min(1680px,94vw);margin:0 auto;padding:40px 28px 30px;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;">
         <h2 style="font-size:22px;font-weight:800;letter-spacing:-.01em;margin:0;color:#1A1A2E;display:flex;align-items:center;gap:9px;"><span style="color:#C8102E;">📣</span> Latest News &amp; Updates</h2>
         <a href="#" style="font-size:13px;font-weight:600;color:#003087;">View archive →</a>
@@ -198,7 +207,7 @@
 
   <!-- RESEARCH PILLARS -->
   <section style="background:#F8F9FA;">
-    <div style="max-width:1080px;margin:0 auto;padding:46px 28px;">
+    <div style="max-width:min(1680px,94vw);margin:0 auto;padding:46px 28px;">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:24px;">
         <h2 style="font-size:22px;font-weight:800;letter-spacing:-.01em;margin:0;color:#1A1A2E;">Research Pillars</h2>
         <a href="Research.dc.html" style="font-size:13px;font-weight:600;color:#003087;">All research areas →</a>
@@ -245,12 +254,12 @@
 
   <!-- LIFE IN THE LAB -->
   <section style="background:#fff;">
-    <div style="max-width:1080px;margin:0 auto;padding:46px 28px;">
+    <div style="max-width:min(1680px,94vw);margin:0 auto;padding:46px 28px;">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:20px;">
         <h2 style="font-size:22px;font-weight:800;letter-spacing:-.01em;margin:0;color:#1A1A2E;">🎓 Life in the Lab</h2>
         <p style="font-size:13px;color:#8A90A6;font-weight:500;">Commencement &amp; milestones across the DETAIL family.</p>
       </div>
-      <div style="display:grid;grid-template-columns:1.25fr 1fr 1fr;grid-template-rows:auto auto;gap:12px;">
+      <div class="detail-gallery" style="display:grid;grid-template-columns:1.25fr 1fr 1fr;grid-template-rows:auto auto;gap:12px;">
         <div class="detail-gcell" style="grid-row:span 2;position:relative;border-radius:14px;overflow:hidden;background:#0A1430;min-height:340px;">
           <img class="detail-gimg" src="assets/lab-commencement.jpg" alt="DETAIL Lab members at Villanova commencement" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"/>
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,20,48,.78),transparent 55%);"></div>
@@ -276,7 +285,7 @@
 
   <!-- MEDIA FEATURES -->
   <section style="background:#003087;color:#fff;">
-    <div style="max-width:1080px;margin:0 auto;padding:26px 28px;display:flex;align-items:center;gap:32px;flex-wrap:wrap;justify-content:center;">
+    <div style="max-width:min(1680px,94vw);margin:0 auto;padding:26px 28px;display:flex;align-items:center;gap:32px;flex-wrap:wrap;justify-content:center;">
       <span style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#9FB4DC;">Featured in</span>
       <div style="display:flex;align-items:center;gap:30px;flex-wrap:wrap;justify-content:center;font-weight:700;font-size:18px;color:#fff;">
         <span style="font-style:italic;font-weight:800;">WIRED</span>
@@ -289,7 +298,7 @@
 
   <!-- FOOTER -->
   <footer style="background:#0A1430;color:#C9D4EC;">
-    <div style="max-width:1080px;margin:0 auto;padding:40px 28px 30px;display:flex;flex-wrap:wrap;gap:36px;justify-content:space-between;">
+    <div style="max-width:min(1680px,94vw);margin:0 auto;padding:40px 28px 30px;display:flex;flex-wrap:wrap;gap:36px;justify-content:space-between;">
       <div style="max-width:340px;">
         <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
           <span style="display:inline-flex;width:38px;height:38px;border-radius:50%;background:#fff;align-items:center;justify-content:center;border:2px solid var(--accent,#D1A73B);">
@@ -317,7 +326,7 @@
       </div>
     </div>
     <div style="border-top:1px solid rgba(255,255,255,.08);">
-      <div style="max-width:1080px;margin:0 auto;padding:16px 28px;font-size:12px;color:#6B7BA3;">© 2026 DETAIL Lab · Villanova University</div>
+      <div style="max-width:min(1680px,94vw);margin:0 auto;padding:16px 28px;font-size:12px;color:#6B7BA3;">© 2026 DETAIL Lab · Villanova University</div>
     </div>
   </footer>
 
