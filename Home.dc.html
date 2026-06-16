@@ -32,6 +32,8 @@
   .detail-dot{transition:width .3s ease, background .3s ease;cursor:pointer;}
   .detail-newsrow{transition:background .15s ease;}
   .detail-newsrow:hover{background:#F4F7FD;}
+  .detail-heroarrow{transition:background .18s ease, transform .15s ease;}
+  .detail-heroarrow:hover{background:rgba(10,20,48,.62)!important;transform:translateY(-50%) scale(1.06);}
   .detail-navlinks{scrollbar-width:none;-webkit-overflow-scrolling:touch;}
   .detail-navlinks::-webkit-scrollbar{display:none;}
   .detail-navlinks a{flex:0 0 auto;}
@@ -108,28 +110,25 @@
       </div>
     </div>
 
-    <!-- HERO B: Split panel -->
-    <div class="detail-herob" style="position:absolute;inset:0;transition:opacity .9s ease;opacity:{{ heroBOp }};z-index:{{ heroBZ }};pointer-events:{{ heroBPe }};display:grid;grid-template-columns:1.15fr .85fr;">
-      <div style="background:#003087;color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 28px;">
-        <div style="max-width:520px;margin-left:auto;width:100%;padding-left:max(0px,calc((100vw - min(1680px,94vw))/2));">
-          <div style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--accent,#D1A73B);margin-bottom:12px;">DETAIL Lab · Villanova ECE</div>
-          <h1 class="detail-hero-h1" style="font-size:36px;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;">Engineering AI you can <span style="color:var(--accent,#D1A73B);">depend</span> on.</h1>
-          <p style="font-size:16px;line-height:1.45;color:#C9D4EC;margin:0 0 22px;max-width:420px;">Robust, efficient, brain-inspired systems — from silicon faults to large models. ⚡</p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <a class="detail-cta-primary" href="Research.dc.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent,#D1A73B);color:#1A1A2E;font-weight:700;font-size:14px;padding:11px 20px;border-radius:9px;">Explore Research →</a>
-            <a class="detail-cta-ghost" href="Publications.dc.html" style="display:inline-flex;align-items:center;border:1.5px solid rgba(255,255,255,.45);color:#fff;font-weight:600;font-size:14px;padding:11px 20px;border-radius:9px;">Publications</a>
-          </div>
+    <!-- HERO B: Circuit (full-bleed) -->
+    <div style="position:absolute;inset:0;transition:opacity .9s ease;opacity:{{ heroBOp }};z-index:{{ heroBZ }};pointer-events:{{ heroBPe }};background:#003087;color:#fff;overflow:hidden;">
+      <svg viewBox="0 0 1200 340" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;opacity:.85;" aria-hidden="true">
+        <g stroke="var(--accent,#D1A73B)" stroke-width="1.4" fill="none" opacity=".4" style="animation:detailDrift1 24s ease-in-out infinite;">
+          <path d="M80 90 H300 V180 H520"/><path d="M80 250 H240 V300 H600"/><path d="M380 50 V150 H700"/><path d="M160 320 H440 V250"/><path d="M760 120 H980 V210 H1140"/><path d="M820 300 H1040 V230"/>
+        </g>
+        <g fill="var(--accent,#D1A73B)" style="animation:detailDrift3 28s ease-in-out infinite;">
+          <circle cx="80" cy="90" r="5"/><circle cx="300" cy="180" r="5"/><circle cx="520" cy="180" r="6" style="animation:detailPulse 5s infinite;"/><circle cx="80" cy="250" r="5"/><circle cx="600" cy="300" r="5"/><circle cx="380" cy="50" r="5"/><circle cx="700" cy="150" r="6"/><circle cx="440" cy="250" r="5"/><circle cx="980" cy="210" r="6" style="animation:detailPulse 6s infinite;"/><circle cx="1140" cy="210" r="5"/><circle cx="760" cy="120" r="5"/><circle cx="1040" cy="300" r="5"/>
+        </g>
+      </svg>
+      <div style="position:absolute;inset:0;background:linear-gradient(105deg,rgba(0,32,90,.82) 0%,rgba(0,48,135,.5) 55%,rgba(0,48,135,.25) 100%);"></div>
+      <div style="position:relative;max-width:min(1680px,94vw);margin:0 auto;padding:0 28px;height:100%;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--accent,#D1A73B);margin-bottom:12px;">DETAIL Lab · Villanova ECE</div>
+        <h1 class="detail-hero-h1" style="max-width:760px;font-size:40px;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance;">Engineering AI you can <span style="color:var(--accent,#D1A73B);">depend</span> on.</h1>
+        <p style="max-width:600px;font-size:17px;line-height:1.45;color:#C9D4EC;margin:0 0 22px;">Robust, efficient, brain-inspired systems — from silicon faults to large models. ⚡</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a class="detail-cta-primary" href="Research.dc.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent,#D1A73B);color:#1A1A2E;font-weight:700;font-size:14px;padding:11px 20px;border-radius:9px;">Explore Research →</a>
+          <a class="detail-cta-ghost" href="Publications.dc.html" style="display:inline-flex;align-items:center;border:1.5px solid rgba(255,255,255,.45);color:#fff;font-weight:600;font-size:14px;padding:11px 20px;border-radius:9px;">Publications</a>
         </div>
-      </div>
-      <div class="detail-herob-panel" style="background:linear-gradient(160deg,#0A1F4E,#06163A);position:relative;overflow:hidden;">
-        <svg viewBox="0 0 520 340" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;" aria-hidden="true">
-          <g stroke="var(--accent,#D1A73B)" stroke-width="1.4" fill="none" opacity=".55" style="animation:detailDrift1 24s ease-in-out infinite;">
-            <path d="M60 80 H220 V160 H380"/><path d="M60 200 H180 V260 H440"/><path d="M280 50 V130 H480"/><path d="M120 300 H320 V230"/>
-          </g>
-          <g fill="var(--accent,#D1A73B)" style="animation:detailDrift3 28s ease-in-out infinite;">
-            <circle cx="60" cy="80" r="5"/><circle cx="220" cy="160" r="5"/><circle cx="380" cy="160" r="6" style="animation:detailPulse 5s infinite;"/><circle cx="60" cy="200" r="5"/><circle cx="440" cy="260" r="5"/><circle cx="280" cy="50" r="5"/><circle cx="480" cy="130" r="6"/><circle cx="320" cy="230" r="5"/>
-          </g>
-        </svg>
       </div>
     </div>
 
@@ -164,12 +163,16 @@
       </div>
     </div>
 
+    <!-- PREV / NEXT ARROWS -->
+    <button onClick="{{ prevHero }}" class="detail-heroarrow" aria-label="Previous slide" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:25;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(10,20,48,.4);color:#fff;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);font-family:inherit;padding:0;">‹</button>
+    <button onClick="{{ nextHero }}" class="detail-heroarrow" aria-label="Next slide" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:25;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(10,20,48,.4);color:#fff;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);font-family:inherit;padding:0;">›</button>
+
     <!-- DOTS -->
-    <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:8px;align-items:center;">
-      <span class="detail-dot" onClick="{{ goHero0 }}" style="height:7px;border-radius:5px;width:{{ dot0w }};background:{{ dot0bg }};"></span>
-      <span class="detail-dot" onClick="{{ goHero1 }}" style="height:7px;border-radius:5px;width:{{ dot1w }};background:{{ dot1bg }};"></span>
-      <span class="detail-dot" onClick="{{ goHero2 }}" style="height:7px;border-radius:5px;width:{{ dot2w }};background:{{ dot2bg }};"></span>
-      <span class="detail-dot" onClick="{{ goHero3 }}" style="height:7px;border-radius:5px;width:{{ dot3w }};background:{{ dot3bg }};"></span>
+    <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:9px;align-items:center;">
+      <span class="detail-dot" onClick="{{ goHero0 }}" style="height:9px;border-radius:5px;width:{{ dot0w }};background:{{ dot0bg }};"></span>
+      <span class="detail-dot" onClick="{{ goHero1 }}" style="height:9px;border-radius:5px;width:{{ dot1w }};background:{{ dot1bg }};"></span>
+      <span class="detail-dot" onClick="{{ goHero2 }}" style="height:9px;border-radius:5px;width:{{ dot2w }};background:{{ dot2bg }};"></span>
+      <span class="detail-dot" onClick="{{ goHero3 }}" style="height:9px;border-radius:5px;width:{{ dot3w }};background:{{ dot3bg }};"></span>
     </div>
   </section>
 
@@ -354,6 +357,8 @@ class Component extends DCLogic {
     this.rot = setInterval(()=> this.setState(s=>({ hero:(s.hero+1)%this.HERO_COUNT })), 6500);
   }
   goHero(i){ this.setState({ hero:i }); this.startRotate(); }
+  nextHero(){ this.setState(s=>({ hero:(s.hero+1)%this.HERO_COUNT })); this.startRotate(); }
+  prevHero(){ this.setState(s=>({ hero:(s.hero-1+this.HERO_COUNT)%this.HERO_COUNT })); this.startRotate(); }
 
   componentDidMount(){
     this.applyAccent();
@@ -438,7 +443,8 @@ class Component extends DCLogic {
       heroDOp: h===3?1:0, heroDZ: h===3?10:1, heroDPe: h===3?'auto':'none',
       dot0w:dotW(0), dot1w:dotW(1), dot2w:dotW(2), dot3w:dotW(3),
       dot0bg:dotBg(0), dot1bg:dotBg(1), dot2bg:dotBg(2), dot3bg:dotBg(3),
-      goHero0:()=>this.goHero(0), goHero1:()=>this.goHero(1), goHero2:()=>this.goHero(2), goHero3:()=>this.goHero(3)
+      goHero0:()=>this.goHero(0), goHero1:()=>this.goHero(1), goHero2:()=>this.goHero(2), goHero3:()=>this.goHero(3),
+      prevHero:()=>this.prevHero(), nextHero:()=>this.nextHero()
     };
   }
 }
