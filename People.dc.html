@@ -69,16 +69,16 @@
   <section style="background:#fff;">
     <div style="max-width:min(1680px,94vw);margin:0 auto;padding:48px 28px 30px;">
       <div class="detail-pi" style="display:grid;grid-template-columns:200px 1fr;gap:30px;align-items:center;background:#F8F9FA;border:1px solid #E7EAF3;border-radius:18px;padding:28px;">
-        <div style="width:160px;height:160px;border-radius:16px;background:linear-gradient(160deg,#003087,#0A1F4E);display:flex;align-items:center;justify-content:center;justify-self:center;color:#fff;font-family:'Newsreader',Georgia,serif;font-size:60px;font-weight:600;border:3px solid #D1A73B;">XJ</div>
+        <img src="assets/jiao.jpg" alt="Dr. Xun Jiao" style="width:160px;height:160px;border-radius:16px;object-fit:cover;object-position:center top;justify-self:center;border:3px solid #D1A73B;"/>
         <div>
-          <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#8A6A1E;margin-bottom:7px;">Principal Investigator</div>
-          <h2 style="font-size:26px;font-weight:800;margin:0 0 4px;color:#1A1A2E;letter-spacing:-.01em;">Prof. Xun Jiao</h2>
-          <div style="font-size:14px;color:#5A6079;font-weight:600;margin-bottom:12px;">Associate Professor · Dept. of Electrical &amp; Computer Engineering, Villanova University</div>
-          <p style="font-size:14px;line-height:1.6;color:#41485E;margin:0 0 14px;max-width:640px;">Directs the DETAIL Lab. Research spans dependable and efficient AI/ML systems, hardware reliability and approximate computing, fuzz testing, and brain-inspired hyperdimensional computing. Work has been featured in WIRED and Quanta Magazine, and presented to Congress.</p>
+          <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#8A6A1E;margin-bottom:7px;">Director · Principal Investigator</div>
+          <h2 style="font-size:26px;font-weight:800;margin:0 0 4px;color:#1A1A2E;letter-spacing:-.01em;">Dr. Xun Jiao</h2>
+          <div style="font-size:14px;color:#5A6079;font-weight:600;margin-bottom:12px;">Assistant Professor · Dept. of Electrical &amp; Computer Engineering, Villanova University</div>
+          <p style="font-size:14px;line-height:1.6;color:#41485E;margin:0 0 14px;max-width:640px;">Leads the Dependable, Efficient, and Intelligent Computing Lab (DETAIL), using a software-hardware codesign approach to build dependable and efficient computing systems for the applications of machine intelligence. Research spans robust/resilient AI/ML systems, hardware reliability and approximate computing, fuzz testing, and brain-inspired hyperdimensional computing. Our research is sponsored by NSF, NIH, L3Harris, and NVidia.</p>
           <div style="display:flex;flex-wrap:wrap;gap:10px;">
             <a href="mailto:xun.jiao@villanova.edu" style="font-size:12.5px;font-weight:700;color:#fff;background:#003087;padding:8px 15px;border-radius:8px;">✉ Email</a>
-            <a href="#" target="_blank" style="font-size:12.5px;font-weight:700;color:#003087;background:#EAF0FB;padding:8px 15px;border-radius:8px;">Google Scholar</a>
-            <a href="#" target="_blank" style="font-size:12.5px;font-weight:700;color:#003087;background:#EAF0FB;padding:8px 15px;border-radius:8px;">Lab Website</a>
+            <a href="http://www.ece.villanova.edu/~xjiao/" target="_blank" style="font-size:12.5px;font-weight:700;color:#003087;background:#EAF0FB;padding:8px 15px;border-radius:8px;">Homepage</a>
+            <a href="https://vu-detail.github.io" target="_blank" style="font-size:12.5px;font-weight:700;color:#003087;background:#EAF0FB;padding:8px 15px;border-radius:8px;">Lab Website</a>
           </div>
         </div>
       </div>
@@ -102,12 +102,28 @@
     </div>
   </section>
 
-  <!-- MS / ALUMNI -->
+  <!-- MS STUDENTS -->
+  <section style="background:#fff;">
+    <div style="max-width:min(1680px,94vw);margin:0 auto;padding:30px 28px 10px;">
+      <h2 style="font-size:20px;font-weight:800;margin:0 0 18px;color:#1A1A2E;display:flex;align-items:center;gap:9px;">📘 Master's Students</h2>
+      <div class="detail-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+        <sc-for list="{{ ms }}" as="m" hint-placeholder-count="3">
+          <div class="detail-person" style="background:#fff;border:1px solid #E1E6F0;border-radius:14px;padding:20px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:{{ m.avatarBg }};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:21px;margin-bottom:12px;">{{ m.initials }}</div>
+            <div style="font-size:14.5px;font-weight:700;color:#1A1A2E;line-height:1.25;">{{ m.name }}</div>
+            <div style="font-size:12px;color:#5A6079;margin-top:4px;line-height:1.4;">{{ m.focus }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- UNDERGRAD STUDENTS -->
   <section style="background:#fff;">
     <div style="max-width:min(1680px,94vw);margin:0 auto;padding:30px 28px 24px;">
-      <h2 style="font-size:20px;font-weight:800;margin:0 0 18px;color:#1A1A2E;display:flex;align-items:center;gap:9px;">🔬 MS Researchers &amp; Undergrads</h2>
+      <h2 style="font-size:20px;font-weight:800;margin:0 0 18px;color:#1A1A2E;display:flex;align-items:center;gap:9px;">🎒 Undergraduate Students</h2>
       <div class="detail-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-        <sc-for list="{{ ms }}" as="m" hint-placeholder-count="4">
+        <sc-for list="{{ ugrad }}" as="m" hint-placeholder-count="6">
           <div class="detail-person" style="background:#fff;border:1px solid #E1E6F0;border-radius:14px;padding:20px;display:flex;flex-direction:column;align-items:center;text-align:center;">
             <div style="width:64px;height:64px;border-radius:50%;background:{{ m.avatarBg }};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:21px;margin-bottom:12px;">{{ m.initials }}</div>
             <div style="font-size:14.5px;font-weight:700;color:#1A1A2E;line-height:1.25;">{{ m.name }}</div>
@@ -189,25 +205,33 @@ class Component extends DCLogic {
     const dress = (arr)=> arr.map((m,i)=>{ const p=PAL[i%PAL.length]; return { ...m, initials:init(m.name), avatarBg:p.bg, ring:p.ring, tagFg:p.tagFg, tagBg:p.tagBg }; });
 
     const phds = dress([
-      { name:'Graduate Researcher A', focus:'Resilient DNN accelerators', pillar:'Robust AI' },
-      { name:'Graduate Researcher B', focus:'Approximate computing & HW', pillar:'Approx. Comp' },
-      { name:'Graduate Researcher C', focus:'Fuzzing AI runtimes', pillar:'Fuzz Testing' },
-      { name:'Graduate Researcher D', focus:'Hyperdimensional computing', pillar:'HDC' }
+      { name:'Richard Wang', focus:'Ph.D. Student', pillar:'ECE' },
+      { name:'Brian Dragun', focus:'Ph.D. Student', pillar:'ECE' }
     ]);
     const ms = dress([
-      { name:'MS Researcher E', focus:'Fault-aware training' },
-      { name:'MS Researcher F', focus:'Energy modeling' },
-      { name:'Undergrad G', focus:'HDC for genomics' },
-      { name:'Undergrad H', focus:'Differential testing' }
+      { name:'Lauren Scalice', focus:"Master's Student" },
+      { name:'Sean Lane', focus:"Master's Student" },
+      { name:'Bikal Lamichhane', focus:"Master's Student" }
+    ]);
+    const ugrad = dress([
+      { name:'Caroline Maclaren', focus:'2023 Fulbright Scholar' },
+      { name:'Oluwasola Dugbo', focus:'Villanova Match Research Program' },
+      { name:'Kennedy Cornish', focus:'Clare Boothe Luce Engineering Scholar' },
+      { name:'Duncan Smith', focus:'Villanova Undergraduate Research Fellow' },
+      { name:'Shenda Huang', focus:'Villanova Match Research Program' },
+      { name:'Xingjian Wang', focus:'Villanova Undergraduate Research Fellow' }
     ]);
     const alumni = [
-      { name:'Alumnus I', now:'now at a semiconductor company' },
-      { name:'Alumna J', now:'PhD at a top-10 program' },
-      { name:'Alumnus K', now:'research scientist, industry lab' },
-      { name:'Alumna L', now:'now at a cloud provider' },
-      { name:'Alumnus M', now:'startup co-founder' }
+      { name:'Dongning Ma', now:'DAC Young Fellow' },
+      { name:'Mauro Sanchirico', now:'COE Outstanding Graduate Student Award' },
+      { name:'Rahul Thapa', now:'2023 Knight-Hennessy Scholar' },
+      { name:'Andrew Osburn', now:'Villanova Match Research Program' },
+      { name:'Hongbo Sun', now:'now M.S. at CMU' },
+      { name:'Siyu Shen', now:'now M.S. at Brown University' },
+      { name:'Vu Tran', now:'Embedded Firmware Engineer at Pergamon Corp' },
+      { name:'Raymond Ogunjimi', now:'Hoffman Trailblazer Summer Research Fellowship' }
     ];
-    return { phds, ms, alumni };
+    return { phds, ms, ugrad, alumni };
   }
 }
 </script>
