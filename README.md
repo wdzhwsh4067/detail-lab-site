@@ -143,3 +143,6 @@ appears once the GitHub Pages build/refresh completes.
 See [`oauth-worker/README.md`](oauth-worker/README.md) for the worker's
 endpoints (`/auth`, `/callback`), configuration vars/secrets, and deploy
 details.
+
+## Image credits
+Card/topic photos are from [Unsplash](https://unsplash.com) (free license, commercial use OK) and are stored in `assets/research/` and `assets/artifacts/`. The PI photo and lab photos are the lab's own.

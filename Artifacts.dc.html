@@ -78,7 +78,8 @@
     <div style="max-width:min(1680px,94vw);margin:0 auto;padding:24px 28px 56px;">
       <div class="detail-artgrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
         <sc-for list="{{ artifacts }}" as="a" hint-placeholder-count="6">
-          <a href="{{ a.url }}" target="_blank" class="detail-art" style="display:flex;flex-direction:column;background:#fff;border:1px solid #E1E6F0;border-top:4px solid {{ a.accent }};border-radius:14px;padding:22px;">
+          <a href="{{ a.url }}" target="_blank" class="detail-art" style="display:flex;flex-direction:column;background:#fff;border:1px solid #E1E6F0;border-top:4px solid {{ a.accent }};border-radius:14px;padding:22px;overflow:hidden;">
+            <img src="{{ a.image }}" alt="{{ a.name }}" loading="lazy" style="width:calc(100% + 44px);height:150px;object-fit:cover;margin:-22px -22px 16px;display:block;"/>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">
               <div style="display:flex;align-items:center;gap:11px;">
                 <span style="width:42px;height:42px;border-radius:11px;background:{{ a.iconBg }};display:flex;align-items:center;justify-content:center;font-size:22px;">{{ a.icon }}</span>
@@ -149,11 +150,11 @@ class Component extends DCLogic {
       'Model':   { fg:'#8A6A1E', bg:'#F6ECCF', accent:'#C79A3A', icon:'🧠', iconBg:'#F6ECCF' }
     };
     this.DATA = [
-      { id:'a1', kind:'Model', featured:true, name:'MoleHD', desc:'Drug discovery using brain-inspired hyperdimensional computing for molecular property prediction (BIBM\'22).', langs:['Python'], stars:'GitHub', url:'https://github.com/VU-DETAIL/MoleHD' },
-      { id:'a2', kind:'Tool', featured:true, name:'HD-Hub', desc:'A hub for hyperdimensional computing (HDC) implementations across different applications.', langs:['Python'], stars:'GitHub', url:'https://github.com/VU-DETAIL/HD-Hub' },
-      { id:'a3', kind:'Model', name:'ODHD', desc:'One-class brain-inspired hyperdimensional computing for outlier detection (DAC\'22).', langs:['Python'], stars:'GitHub', url:'https://github.com/Raisony/ODHD' },
-      { id:'a4', kind:'Model', name:'SpamHD', desc:'Memory-efficient text spam detection using brain-inspired hyperdimensional computing (ISVLSI\'21).', langs:['Python'], stars:'GitHub', url:'https://github.com/AikawaMafuyu/HamHD' },
-      { id:'a5', kind:'Code', name:'Workload-Aware Approximate Computing Configuration', desc:'Input-aware codebase for workload-aware approximate computing configuration (DATE\'21).', langs:['Python'], stars:'GitHub', url:'https://github.com/ThapaRahul/DETAIL-Input-Aware-CodeBase' }
+      { id:'a1', kind:'Model', featured:true, name:'MoleHD', image:'assets/artifacts/molehd.jpg', desc:'Drug discovery using brain-inspired hyperdimensional computing for molecular property prediction (BIBM\'22).', langs:['Python'], stars:'GitHub', url:'https://github.com/VU-DETAIL/MoleHD' },
+      { id:'a2', kind:'Tool', featured:true, name:'HD-Hub', image:'assets/artifacts/hdhub.jpg', desc:'A hub for hyperdimensional computing (HDC) implementations across different applications.', langs:['Python'], stars:'GitHub', url:'https://github.com/VU-DETAIL/HD-Hub' },
+      { id:'a3', kind:'Model', name:'ODHD', image:'assets/artifacts/odhd.jpg', desc:'One-class brain-inspired hyperdimensional computing for outlier detection (DAC\'22).', langs:['Python'], stars:'GitHub', url:'https://github.com/Raisony/ODHD' },
+      { id:'a4', kind:'Model', name:'SpamHD', image:'assets/artifacts/spamhd.jpg', desc:'Memory-efficient text spam detection using brain-inspired hyperdimensional computing (ISVLSI\'21).', langs:['Python'], stars:'GitHub', url:'https://github.com/AikawaMafuyu/HamHD' },
+      { id:'a5', kind:'Code', name:'Workload-Aware Approximate Computing Configuration', image:'assets/artifacts/approx.jpg', desc:'Input-aware codebase for workload-aware approximate computing configuration (DATE\'21).', langs:['Python'], stars:'GitHub', url:'https://github.com/ThapaRahul/DETAIL-Input-Aware-CodeBase' }
     ];
   }
 
