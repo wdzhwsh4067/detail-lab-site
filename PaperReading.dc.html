@@ -162,12 +162,17 @@
               </div>
               <p style="font-size:13px;color:#5A6079;margin:0 0 20px;line-height:1.55;">Fill the table and commit — this writes a new markdown file to <code style="background:#EEF1F8;padding:1px 6px;border-radius:5px;">data/reading/</code> and updates the index, just like a Git commit. <strong style="color:#9B2330;">Works on the deployed site;</strong> the preview can't reach GitHub.</p>
               <div class="detail-submit-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-                <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Date *<input type="date" value="{{ fDate }}" onInput="{{ onDate }}" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
+                <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Date<div style="border:1px solid #E1E6F0;border-radius:9px;padding:9px 12px;font-size:13.5px;color:#5A6079;background:#F4F6FA;">{{ todayLabel }} <span style="color:#9AA3BD;font-weight:500;">· auto (today)</span></div></label>
                 <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Venue<input value="{{ fVenue }}" onInput="{{ onVenue }}" placeholder="e.g. ICML 2026" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
                 <label style="grid-column:1 / -1;display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Paper title *<input value="{{ fTitle }}" onInput="{{ onTitle }}" placeholder="Title of the paper" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
                 <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Presenter<input value="{{ fPresenter }}" onInput="{{ onPresenter }}" placeholder="Who is presenting" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
                 <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Paper URL<input value="{{ fPaperUrl }}" onInput="{{ onPaperUrl }}" placeholder="https://…" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
-                <label style="grid-column:1 / -1;display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Tags <span style="font-weight:500;color:#8A90A6;">(comma-separated)</span><input value="{{ fTags }}" onInput="{{ onTags }}" placeholder="HDC, Robustness" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
+                <label style="grid-column:1 / -1;display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:700;color:#41485E;">Tags <span style="font-weight:500;color:#8A90A6;">(pick one or more members)</span>
+                  <div style="display:flex;flex-wrap:wrap;gap:7px;">
+                    <sc-for list="{{ tagOptions }}" as="opt" hint-placeholder-count="6">
+                      <span onClick="{{ opt.onClick }}" style="cursor:pointer;font-size:12px;font-weight:700;padding:6px 13px;border-radius:20px;color:{{ opt.fg }};background:{{ opt.bg }};border:1px solid {{ opt.bd }};">{{ opt.label }}</span>
+                    </sc-for>
+                  </div></label>
                 <label style="grid-column:1 / -1;display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Notes / summary * <span style="font-weight:500;color:#8A90A6;">(Markdown — use ## headings, **bold**, - lists)</span><textarea value="{{ fBody }}" onInput="{{ onBody }}" rows="7" placeholder="## Summary&#10;…&#10;&#10;## Key Ideas&#10;- …" style="border:1px solid #D8DEEC;border-radius:9px;padding:11px 12px;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.55;color:#1A1A2E;background:#fff;outline:none;resize:vertical;"></textarea></label>
               </div>
               <div style="margin-top:18px;padding-top:18px;border-top:1px dashed #D6DAE6;">
@@ -275,6 +280,8 @@ const DETAIL_OAUTH_BASE = 'https://detail-lab-oauth.wdzhwish7952.workers.dev';
 const GH_API = 'https://api.github.com/repos/' + DETAIL_OWNER + '/' + DETAIL_CONTENT_REPO + '/contents/';
 const ghHeaders = (token) => ({ 'Authorization':'Bearer ' + token, 'Accept':'application/vnd.github+json' });
 const b64decode = (b64) => decodeURIComponent(escape(atob((b64||'').replace(/\s/g,''))));
+// Fixed set of session tags (members). Edit this list to rename / add members; users can only pick from it.
+const SESSION_TAGS = ['member1','member2','member3','member4','member5','member6'];
 
 class Component extends DCLogic {
   state = {
@@ -282,7 +289,7 @@ class Component extends DCLogic {
     auth: 'anon', showToken: false, tokenInput: '', accessMsg: '', memberLabel: 'DETAIL members',
     showSubmit: false, submitStatus: null, submitMsg: '',
     form: { owner:'wdzhwsh4067', repo:'detail-lab-content', branch:'main', token:'',
-            date:'', title:'', presenter:'', venue:'', tags:'', paperUrl:'', body:'' }
+            date:'', title:'', presenter:'', venue:'', tags:[], paperUrl:'', body:'' }
   };
 
   // ── AUTH ───────────────────────────────────────────────
@@ -419,21 +426,24 @@ class Component extends DCLogic {
   // ── SUBMIT ─────────────────────────────────────────────
   toggleSubmit(){ this.setState(s=>({ showSubmit: !s.showSubmit })); }
   setField(k,v){ this.setState(s=>({ form: { ...s.form, [k]: v } })); }
+  toggleTag(name){ this.setState(s=>{ const has=(s.form.tags||[]).includes(name); return { form: { ...s.form, tags: has ? s.form.tags.filter(t=>t!==name) : [ ...(s.form.tags||[]), name ] } }; }); }
 
   async submitSession(){
     const f = this.state.form;
-    if(!f.token || !f.date || !f.title.trim() || !f.body.trim()){
-      this.setState({ submitStatus:'error', submitMsg:'Token, date, title and notes are required.' });
+    if(!f.token || !f.title.trim() || !f.body.trim()){
+      this.setState({ submitStatus:'error', submitMsg:'Token, title and notes are required.' });
       return;
     }
     this.setState({ submitStatus:'working', submitMsg:'Committing…' });
     try {
       const enc = (str)=> btoa(unescape(encodeURIComponent(str)));
       const dec = (b64)=> decodeURIComponent(escape(atob((b64||'').replace(/\s/g,''))));
-      const slug = (f.date + '-' + f.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')).slice(0,48);
+      const _d = new Date();
+      const date = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
+      const slug = (date + '-' + f.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')).slice(0,48);
       const file = slug + '.md';
-      const tagsArr = f.tags.split(',').map(t=>t.trim()).filter(Boolean);
-      const md = '# ' + f.title.trim() + '\n\n**Presenter:** ' + (f.presenter||'—') + ' · **Date:** ' + f.date + '\n**Venue:** ' + (f.venue||'—') + '\n\n' + f.body.trim() + '\n';
+      const tagsArr = Array.isArray(f.tags) ? f.tags : [];
+      const md = '# ' + f.title.trim() + '\n\n**Presenter:** ' + (f.presenter||'—') + ' · **Date:** ' + date + '\n**Venue:** ' + (f.venue||'—') + '\n\n' + f.body.trim() + '\n';
       const api = 'https://api.github.com/repos/' + f.owner + '/' + f.repo + '/contents/';
       const headers = { 'Authorization':'Bearer ' + f.token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' };
       const put = async (path, payload)=>{
@@ -446,10 +456,10 @@ class Component extends DCLogic {
       if(!idxRes.ok) throw new Error('Could not read index.json (HTTP ' + idxRes.status + ')');
       const idxJson = await idxRes.json();
       const current = JSON.parse(dec(idxJson.content));
-      current.unshift({ id:slug, date:f.date, title:f.title.trim(), presenter:f.presenter||'', venue:f.venue||'', tags:tagsArr, file, paperUrl:f.paperUrl||'' });
+      current.unshift({ id:slug, date:date, title:f.title.trim(), presenter:f.presenter||'', venue:f.venue||'', tags:tagsArr, file, paperUrl:f.paperUrl||'' });
       await put('data/reading/index.json', { message:'Index reading session: ' + f.title.trim(), content: enc(JSON.stringify(current,null,2) + '\n'), sha: idxJson.sha, branch: f.branch });
       this.setState(s=>({ submitStatus:'success', submitMsg:'✓ Committed! It will appear after the Pages build finishes.',
-        form: { ...s.form, date:'', title:'', presenter:'', venue:'', tags:'', paperUrl:'', body:'' } }));
+        form: { ...s.form, date:'', title:'', presenter:'', venue:'', tags:[], paperUrl:'', body:'' } }));
       this.loadIndex();
     } catch(e){
       this.setState({ submitStatus:'error', submitMsg:'⚠ ' + (e.message || 'Submit failed (the preview sandbox cannot reach GitHub).') });
@@ -488,6 +498,9 @@ class Component extends DCLogic {
 
     const f = this.state.form;
     const H = (k)=> (e)=> this.setField(k, e.target.value);
+    const today = new Date();
+    const todayLabel = today.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const tagOptions = SESSION_TAGS.map(name=>{ const on=(f.tags||[]).includes(name); return { label:name, onClick:()=>this.toggleTag(name), fg:on?'#fff':'#5A6079', bg:on?'#003087':'#fff', bd:on?'#003087':'#D8DEEC' }; });
     const submitColor = this.state.submitStatus==='success' ? '#1F6B3B'
       : this.state.submitStatus==='error' ? '#C8102E' : '#8A90A6';
 
@@ -524,9 +537,10 @@ class Component extends DCLogic {
       hasSubmitMsg: !!this.state.submitMsg,
       submitColor,
       fOwner:f.owner, fRepo:f.repo, fBranch:f.branch,
-      fDate:f.date, fTitle:f.title, fPresenter:f.presenter, fVenue:f.venue, fTags:f.tags, fPaperUrl:f.paperUrl, fBody:f.body,
+      fTitle:f.title, fPresenter:f.presenter, fVenue:f.venue, fPaperUrl:f.paperUrl, fBody:f.body,
+      todayLabel, tagOptions,
       onOwner:H('owner'), onRepo:H('repo'), onBranch:H('branch'),
-      onDate:H('date'), onTitle:H('title'), onPresenter:H('presenter'), onVenue:H('venue'), onTags:H('tags'), onPaperUrl:H('paperUrl'), onBody:H('body')
+      onTitle:H('title'), onPresenter:H('presenter'), onVenue:H('venue'), onPaperUrl:H('paperUrl'), onBody:H('body')
     };
   }
 }
