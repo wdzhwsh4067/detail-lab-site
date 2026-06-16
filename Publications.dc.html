@@ -59,8 +59,8 @@
   <section style="background:#003087;color:#fff;border-bottom:3px solid #D1A73B;">
     <div style="max-width:min(1680px,94vw);margin:0 auto;padding:40px 28px 44px;">
       <div style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#D1A73B;margin-bottom:12px;">Publications</div>
-      <h1 class="detail-h1" style="font-size:38px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;line-height:1.1;">Selected papers</h1>
-      <p style="font-size:16px;line-height:1.5;color:#C9D4EC;margin:0;max-width:620px;">Peer-reviewed work across our four research pillars. Filter by topic or year, search by title, and expand any entry for the abstract. 📄</p>
+      <h1 class="detail-h1" style="font-size:38px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;line-height:1.1;">Publications</h1>
+      <p style="font-size:16px;line-height:1.5;color:#C9D4EC;margin:0;max-width:620px;">Peer-reviewed journal and conference papers across our four research pillars. Filter by type or topic, search by title or author, and expand any entry for the full citation and PDF. 📄</p>
     </div>
   </section>
 
@@ -69,6 +69,10 @@
     <div style="max-width:min(1680px,94vw);margin:0 auto;padding:16px 28px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
       <input value="{{ query }}" onInput="{{ onSearch }}" placeholder="Search title, author, venue…" style="flex:1;min-width:200px;border:1px solid #D8DEEC;border-radius:10px;padding:10px 13px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/>
       <div style="display:flex;flex-wrap:wrap;gap:7px;">
+        <sc-for list="{{ typeChips }}" as="chip" hint-placeholder-count="3">
+          <span class="detail-filter" onClick="{{ chip.onClick }}" style="font-size:12px;font-weight:700;padding:7px 13px;border-radius:9px;color:{{ chip.fg }};background:{{ chip.bg }};border:1px solid {{ chip.bd }};">{{ chip.label }}</span>
+        </sc-for>
+        <span style="width:1px;background:#D8DEEC;align-self:stretch;margin:0 2px;"></span>
         <sc-for list="{{ topicChips }}" as="chip" hint-placeholder-count="5">
           <span class="detail-filter" onClick="{{ chip.onClick }}" style="font-size:12px;font-weight:700;padding:7px 13px;border-radius:9px;color:{{ chip.fg }};background:{{ chip.bg }};border:1px solid {{ chip.bd }};">{{ chip.label }}</span>
         </sc-for>
@@ -101,11 +105,10 @@
             </div>
             <sc-if value="{{ p.open }}">
               <div style="padding:0 20px 20px 88px;">
-                <p style="font-size:13.5px;line-height:1.6;color:#41485E;margin:0 0 12px;border-top:1px solid #EEF1F8;padding-top:13px;">{{ p.abstract }}</p>
+                <p style="font-size:13.5px;line-height:1.6;color:#41485E;margin:0 0 12px;border-top:1px solid #EEF1F8;padding-top:13px;"><strong>{{ p.authors }}</strong>. "{{ p.title }}". {{ p.venueFull }}.</p>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                  <a href="{{ p.pdf }}" target="_blank" style="font-size:12px;font-weight:700;color:#fff;background:#003087;padding:7px 14px;border-radius:8px;">PDF</a>
-                  <a href="{{ p.doi }}" target="_blank" style="font-size:12px;font-weight:700;color:#003087;background:#EAF0FB;padding:7px 14px;border-radius:8px;">DOI</a>
-                  <span onClick="{{ p.onCite }}" style="cursor:pointer;font-size:12px;font-weight:700;color:#5A6079;background:#F1F3F8;padding:7px 14px;border-radius:8px;">{{ p.citeLabel }}</span>
+                  <sc-if value="{{ p.hasPdf }}"><a href="{{ p.pdf }}" target="_blank" style="font-size:12px;font-weight:700;color:#fff;background:#003087;padding:7px 14px;border-radius:8px;">PDF ↗</a></sc-if>
+                  <sc-if value="{{ p.noPdf }}"><span style="font-size:12px;font-weight:700;color:#9AA3BD;background:#F1F3F8;padding:7px 14px;border-radius:8px;">PDF not available</span></sc-if>
                 </div>
               </div>
             </sc-if>
@@ -149,7 +152,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900}}">
 class Component extends DCLogic {
-  state = { query:'', topic:'All', openId:null, cited:{} };
+  state = { query:'', topic:'All', ptype:'All', openId:null };
 
   constructor(props){
     super(props);
@@ -164,24 +167,85 @@ class Component extends DCLogic {
       'JOURNAL': { fg:'#1F6B3B', bg:'#DDF0E4' }
     };
     this.DATA = [
-      { id:'p1', year:2026, type:'CONF', topic:'Robust AI', featured:true, title:'Fault-Tolerant Inference via Criticality-Aware Protection', authors:'PhD Student, X. Jiao', venue:'ICML 2026', abstract:'We introduce a criticality-aware protection scheme that selectively shields the most fault-sensitive weights of quantized networks, recovering most accuracy lost to memory bit-flips at under 3% storage overhead.' },
-      { id:'p2', year:2026, type:'CONF', topic:'Approx. Comp', title:'Resilient DNN Accelerator Design under Voltage Overscaling', authors:'Graduate Researcher, X. Jiao', venue:'DATE 2026', featured:true, abstract:'A co-design of approximate datapaths and voltage overscaling that maps the energy–accuracy Pareto frontier, achieving 2–4× energy savings with negligible accuracy loss after hardware-aware retraining.' },
-      { id:'p3', year:2025, type:'JOURNAL', topic:'HDC', featured:true, title:'MoleHD: Hyperdimensional Computing for Molecular Property Prediction', authors:'X. Jiao et al.', venue:'Nature Communications, 2025', abstract:'MoleHD encodes molecular fingerprints into hypervectors for single-pass-trainable, noise-tolerant property prediction, matching deep baselines at a fraction of the compute. Featured in WIRED.' },
-      { id:'p4', year:2025, type:'CONF', topic:'Fuzz Testing', title:'Coverage-Guided Fuzzing of LLM Inference Runtimes', authors:'Graduate Researcher, X. Jiao', venue:'USENIX Security 2025', abstract:'A structure-aware, coverage-guided fuzzer with a differential oracle that uncovered memory-safety and silent-correctness bugs across open-source LLM serving stacks.' },
-      { id:'p5', year:2025, type:'CONF', topic:'Approx. Comp', title:'Energy–Accuracy Tradeoffs in Approximate DNN Accelerators', authors:'PhD Student, X. Jiao', venue:'ISCA 2025', abstract:'A systematic design-space exploration of approximate multipliers and voltage overscaling, quantifying when approximation is safe and how retraining recovers lost quality.' },
-      { id:'p6', year:2024, type:'JOURNAL', topic:'Robust AI', title:'Characterizing Bit-Flip Resilience in Quantized Neural Networks', authors:'PhD Student, X. Jiao', venue:'IEEE TCAD, 2024', abstract:'We build a per-layer, per-bit criticality landscape for INT8/INT4 networks, showing MSB flips in early layers dominate accuracy loss and motivating selective ECC.' },
-      { id:'p7', year:2024, type:'CONF', topic:'HDC', title:'Approximate Hyperdimensional Computing Accelerators', authors:'Graduate Researcher, X. Jiao', venue:'DAC 2024', abstract:'A co-designed accelerator that exploits HDC\u2019s noise tolerance to aggressively approximate the bundling step, cutting energy with no measurable accuracy impact.' },
-      { id:'p8', year:2023, type:'CONF', topic:'Fuzz Testing', title:'Cross-Layer Fuzzing of Firmware and Hardware Models', authors:'X. Jiao et al.', venue:'ICCAD 2023', abstract:'FuzzStack unifies fault injection and coverage-guided fuzzing into a single harness that surfaces bugs spanning firmware, drivers, and RTL models.' }
+      { id:"p1", year:2023, type:"JOURNAL", topic:"HDC", title:"Testing and Enhancing Adversarial Robustness of Hyperdimensional Computing", authors:"Dongning Ma, Tajana Šimunić Rosing, and Xun Jiao", venue:"TCAD, 2023", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/TCAD2023_HDTest_.pdf" },
+      { id:"p2", year:2022, type:"JOURNAL", topic:"Robust AI", title:"AMITE: A Novel Polynomial Expansion for Analyzing Neural Network Nonlinearities", authors:"Mauro Sanchirico III, Xun Jiao, and C. Nataraj", venue:"TNNLS, 2022", pdf:"https://ieeexplore.ieee.org/document/9650758" },
+      { id:"p3", year:2023, type:"JOURNAL", topic:"Robust AI", title:"Deep Learning Based Walking Tasks Classification in Older Adults using fNIRS", authors:"Dongning Ma, Meltem Izzetoglu, Roee Holtzer, and Xun Jiao", venue:"TNSRE, 2023", pdf:"" },
+      { id:"p4", year:2022, type:"JOURNAL", topic:"HDC", title:"EnHDC: Ensemble Learning for Brain-Inspired Hyperdimensional Computing", authors:"Ruixuan Wang, Dongning Ma, Xun Jiao", venue:"ESL, 2022", pdf:"https://ieeexplore.ieee.org/document/9836968" },
+      { id:"p5", year:2021, type:"JOURNAL", topic:"Approx. Comp", title:"DEVoT: Dynamic Delay Modeling of Functional Units under Voltage and Temperature Variations", authors:"Dongning Ma, Xinqiao Zhang, Ke Huang, Yu Jiang, Wanli Chang, Xun Jiao", venue:"TCAD, 2021", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/DEVoT.pdf" },
+      { id:"p6", year:2020, type:"JOURNAL", topic:"Approx. Comp", title:"LEVAX: An Input-aware Learning-based Error Model of Voltage-Scaled Functional Units", authors:"Xun Jiao, Dongning Ma, Wanli Chang, Yu Jiang", venue:"TCAD, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/TCAD20.pdf" },
+      { id:"p7", year:2020, type:"JOURNAL", topic:"Fuzz Testing", title:"EM-Fuzz: Augmented Firmware Fuzzing via Memory Checking Instrumentation", authors:"Jian Gao, Yiwen Xu, Yu Jiang, Zhe Liu, Wanli Chang, Xun Jiao and Jiaguang Sun", venue:"TCAD, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/EMSOFT20_EMFUZZ.pdf" },
+      { id:"p8", year:2020, type:"JOURNAL", topic:"Robust AI", title:"Dynamic DAG Scheduling on Multiprocessor Systems: Reliability, Energy and Makespan", authors:"Jing Huang, Renfa Li, Xun Jiao, Yu Jiang and Wanli Chang", venue:"TCAD, 2020", pdf:"" },
+      { id:"p9", year:2020, type:"JOURNAL", topic:"Robust AI", title:"Nonlinear dynamic analysis of an epidemiological model for COVID-19 including public behavior and government action", authors:"C. A. K. Kwuimy, Foad Nazari, Xun Jiao, Pejman Rohani & C. Nataraj", venue:"2020", pdf:"https://link.springer.com/article/10.1007/s11071-020-05815-z" },
+      { id:"p10", year:2020, type:"JOURNAL", topic:"Fuzz Testing", title:"Vulnerability of Hardware Neural Networks to Dynamic Operation Point Variations", authors:"Jeng-Hau Lin, Xun Jiao, Mulong Luo, Zhuowen Tu, Rajesh Gupta", venue:"IEEE D&T, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/DT20.pdf" },
+      { id:"p11", year:2019, type:"JOURNAL", topic:"Fuzz Testing", title:"Polar: Function Code Aware Fuzz Testing of ICS Protocol", authors:"Zhengxiong Luo, Feilong Zuo, Yu Jiang, Jian Gao, Xun Jiao, Jiaguang Sun", venue:"TCAD, 2019", pdf:"" },
+      { id:"p12", year:2019, type:"JOURNAL", topic:"Fuzz Testing", title:"DeepFuzzer: Accelerated Deep Greybox Fuzzing", authors:"Jie Liang, Yu Jiang, Mingzhe Wang, Xun Jiao, Yuanliang Chen, Houbing Song, and Kim-Kwang Raymond Choo", venue:"TDSC, 2019", pdf:"http://www.ece.villanova.edu/~xjiao/paper/TDSC19.pdf" },
+      { id:"p13", year:2019, type:"JOURNAL", topic:"Fuzz Testing", title:"Semantic Learning and Emulation Based Cross-platform Binary Vulnerability Seeker", authors:"Jian Gao, Yu Jiang, Zhe Liu, Xin Yang, Cong Wang, Xun Jiao, Zijiang Yang, and Jiaguang Sun", venue:"TSE, 2019", pdf:"http://www.ece.villanova.edu/~xjiao/paper/TSE19.pdf" },
+      { id:"p14", year:2019, type:"JOURNAL", topic:"Approx. Comp", title:"WoMA: An Input-Based Learning Model to Predict Dynamic Workload of Embedded Applications", authors:"Dongning Ma, Xun Jiao", venue:"ESL, 2019", pdf:"http://www.ece.villanova.edu/~xjiao/paper/ESL19.pdf" },
+      { id:"p15", year:2018, type:"JOURNAL", topic:"Approx. Comp", title:"CLIM: A Cross-level Workload-aware Timing Error Prediction Model for Functional Units", authors:"Xun Jiao, Abbas Rahimi, Yu Jiang, Jianguo Wang, Hamed Fatemi, Jose Pineda de Gyvez, and Rajesh Gupta", venue:"TC, 2018", pdf:"http://www.ece.villanova.edu/~xjiao/paper/TC.pdf" },
+      { id:"p16", year:2013, type:"JOURNAL", topic:"Robust AI", title:"Bayesian Network Based Reliability Analysis of PLC Systems", authors:"Yu Jiang, Hehua Zhang, Xiaoyu Song, Xun Jiao, William N. N. Hung, and Jiaguang Sun", venue:"TIE, 2013", pdf:"http://www.ece.villanova.edu/~xjiao/paper/TIE.pdf" },
+      { id:"p17", year:2023, type:"CONF", topic:"Robust AI", title:"Strategies for Enhanced Signal Modulation Classifications Under Unknown Symbol Rates and Noise Conditions", authors:"Ruixuan Wang, Yue Qi, Mojtaba Vaezi, Xun Jiao and Moeness Amin", venue:"ICASSP, 2023", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/ICASSP23.pdf" },
+      { id:"p18", year:2023, type:"CONF", topic:"HDC", title:"Adversarial Attack on Hyperdimensional Computing-based NLP Applications", authors:"Sizhe Zhang, Zhao Wang, Xun Jiao", venue:"DATE, 2023", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/DATE23.pdf" },
+      { id:"p19", year:2023, type:"CONF", topic:"HDC", title:"Robust Hyperdimensional Computing Against Cyber Attacks and Hardware Errors: A Survey", authors:"Dongning Ma, Sizhe Zhang, Xun Jiao", venue:"ASP-DAC, 2023", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/ASPDAC23.pdf" },
+      { id:"p20", year:2023, type:"CONF", topic:"HDC", title:"Beyond von Neumann Era: Brain-inspired Hyperdimensional Computing to the Rescue", authors:"Amrouch, Hussam, Paul R. Genssler, Mohsen Imani, Mariam Issa, Xun Jiao, Wegdan Mohammad, Gloria Sepanta, and Ruixuan Wang", venue:"ASP-DAC, 2023", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/ASPDAC23Beyond.pdf" },
+      { id:"p21", year:2023, type:"CONF", topic:"HDC", title:"PerfHD: Efficient ViT Architecture Performance Ranking using Hyperdimensional Computing", authors:"Dongning Ma, Pengfei Zhao, Xun Jiao", venue:"CVPRW-NAS, 2023", pdf:"" },
+      { id:"p22", year:2023, type:"CONF", topic:"HDC", title:"On Hyperdimensional Computing-Based Federated Learning: A Case Study", authors:"Sizhe Zhang, Dongning Ma, Song Bian, Lei Yang, Xun Jiao", venue:"IJCNN, 2023", pdf:"" },
+      { id:"p23", year:2023, type:"CONF", topic:"Approx. Comp", title:"PreAxC: Error Distribution Prediction for Approximate Computing Quality Control using Graph Neural Networks", authors:"Lakshmi Sathidevi, Abhinav Sharma, Nan Wu, Xun Jiao, Cong Hao", venue:"ISQED, 2023", pdf:"" },
+      { id:"p24", year:2022, type:"CONF", topic:"HDC", title:"Brain-Inspired Hyperdimensional Computing for Ultra-Efficient Edge AI", authors:"Hussam Amrouch, Mohsen Imani, Xun Jiao, Yiannis Aloimonos Cornelia Fermuller, Dehao Yuan, Dongning Ma, Hamza Errahmouni, Paul R. Genssler, Peter Sutor", venue:"CODES+ISSS, 2022", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/2022_ESWEEK.pdf" },
+      { id:"p25", year:2022, type:"CONF", topic:"HDC", title:"ScaleHD: Robust Brain-Inspired Hyperdimensional Computing via Adapative Scaling", authors:"Sizhe Zhang, Mohsen Imani, and Xun Jiao", venue:"ICCAD, 2022", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/ICCAD22.pdf" },
+      { id:"p26", year:2022, type:"CONF", topic:"HDC", title:"MoleHD: Efficient Drug Discovery using Brain Inspired Hyperdimensional Computing", authors:"Dongning Ma, Rahul Thapa, Xun Jiao", venue:"BIBM, 2022", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/BIBM22_MoleHD.pdf" },
+      { id:"p27", year:2022, type:"CONF", topic:"Approx. Comp", title:"AxBy-ViT: Reconfigurable Approximate Computation Bypass for Vision Transformers", authors:"Dongning Ma, Xue Qin, Xun Jiao", venue:"ISQED, 2022", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/ISQED2022_AxC_ViT.pdf" },
+      { id:"p28", year:2022, type:"CONF", topic:"HDC", title:"ODHD: One-Class Brain-Inspired Hyperdimensional Computing for Outlier Detection", authors:"Ruixuan Wang, Xun Jiao, X. Sharon Hu", venue:"DAC, 2022", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/DAC2022_ODHD.pdf" },
+      { id:"p29", year:2022, type:"CONF", topic:"HDC", title:"PoisonHD: Poison Attack on Brain-Inspired Hyperdimensional Computing", authors:"Ruixuan Wang, Xun Jiao", venue:"DATE, 2022", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/DATE2022_PoisonHD.pdf" },
+      { id:"p30", year:2022, type:"CONF", topic:"HDC", title:"Energy-Efficient Brain-Inspired Hyperdimensional Computing Using Voltage Scaling", authors:"Sizhe Zhang, Ruixuan Wang, Dongning Ma, Jeff Jun Zhang, Xunzhao Yin and Xun Jiao", venue:"DATE, 2022", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/DATE2022_HDVolt.pdf" },
+      { id:"p31", year:2021, type:"CONF", topic:"Robust AI", title:"Towards Scalable, Secure, and Smart Mission-Critical IoT Systems: Review and Vision", authors:"Xiaolong Guo, Song Han, X. Sharon Hu, Xun Jiao, Yier Jin, Fanxin Kong, and Michael Lemmon", venue:"EMSOFT, 2021", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/ESWEEK2021_Special_Session%20(9).pdf" },
+      { id:"p32", year:2021, type:"CONF", topic:"HDC", title:"Assessing Robustness of Hyperdimensional Computing Against Errors in Associative Memory", authors:"Sizhe Zhang, Ruixuan Wang, Jeff (Jun) Zhang, Abbas Rahimi, Xun Jiao", venue:"ASAP, 2021", pdf:"https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/ASAP21.pdf" },
+      { id:"p33", year:2021, type:"CONF", topic:"HDC", title:"HDXplore: Automated Differential Testing of Brain-Inspired Hyperdimensional Computing", authors:"Rahul Thapa, Dongning Ma, Xun Jiao", venue:"ISVLSI, 2021", pdf:"http://www.ece.villanova.edu/~xjiao/paper/HDXplore.pdf" },
+      { id:"p34", year:2021, type:"CONF", topic:"HDC", title:"SpamHD: Efficient Text Spam Detection Using Brain-Inspired Hyperdimensional Computing", authors:"Rahul Thapa, Bikal Lamichhane, Dongning Ma, Xun Jiao", venue:"ISVLSI, 2021", pdf:"http://www.ece.villanova.edu/~xjiao/paper/SpamHD.pdf" },
+      { id:"p35", year:2021, type:"CONF", topic:"HDC", title:"HDAD: Hyperdimensional Computing-based Anomaly Detection for Automotive Sensor Attacks", authors:"Ruixuan Wang, Fanxin Kong, Hasshi Sudler, Xun Jiao", venue:"RTAS, 2021", pdf:"http://www.ece.villanova.edu/~xjiao/paper/RTAS21.pdf" },
+      { id:"p36", year:2021, type:"CONF", topic:"Robust AI", title:"Understanding driving behavior using fNIRS and machine learning", authors:"Meltem Izzetoglu, Xun Jiao, and Seri Park", venue:"2021", pdf:"" },
+      { id:"p37", year:2021, type:"CONF", topic:"HDC", title:"HDTest: Differential Fuzz Testing of Brain-Inspired Hyperdimensional Computing", authors:"Dongning Ma, Jianmin Guo, Yu Jiang, Xun Jiao", venue:"DAC, 2021", pdf:"http://www.ece.villanova.edu/~xjiao/paper/DAC21.pdf" },
+      { id:"p38", year:2021, type:"CONF", topic:"Approx. Comp", title:"Workload-Aware Approximate Computing Configuration", authors:"Dongning Ma, Rahul Thapa, Xingjian Wang, Cong Hao and Xun Jiao", venue:"DATE, 2021", pdf:"http://www.ece.villanova.edu/~xjiao/paper/DATE21.pdf" },
+      { id:"p39", year:2020, type:"CONF", topic:"Fuzz Testing", title:"ICS Protocol Fuzzing: Coverage Guided Packet Crack and Generation", authors:"Zhengxiong Luo, Feilong Zuo, Yuheng Shen, Xun Jiao, Wanli Chang, Yu Jiang,", venue:"DAC, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/DAC20ICS.pdf" },
+      { id:"p40", year:2020, type:"CONF", topic:"Approx. Comp", title:"TEVoT: Timing Error Modeling of Functional Units under Dynamic Voltage and Temperature Variations", authors:"Xun Jiao, Dongning Ma, Wanli Chang, Yu Jiang", venue:"DAC, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/DAC20TEVoT.pdf" },
+      { id:"p41", year:2020, type:"CONF", topic:"Robust AI", title:"Fixed-Priority Scheduling and Controller Co-Design for Time-Sensitive Networks", authors:"Xiaotian Dai, Shuai Zhao, Yu Jiang, Xun Jiao, X. Sharon Hu and Wanli Chang", venue:"ICCAD, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/ICCAD20.pdf" },
+      { id:"p42", year:2020, type:"CONF", topic:"Approx. Comp", title:"A Machine Learning-based Error Model of Voltage-Scaled Circuits", authors:"Dongning Ma, Xun Jiao", venue:"DSN, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/DSN2020.pdf" },
+      { id:"p43", year:2020, type:"CONF", topic:"Approx. Comp", title:"AxR-NN: Approximate Computation Reuse for Energy-Efficient Convolutional Neural Networks", authors:"Dongning Ma, Xunzhao Yin, Michael Niemier, X. Sharon Hu, Xun Jiao", venue:"GLSVLSI, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/GLSVLSI20.pdf" },
+      { id:"p44", year:2020, type:"CONF", topic:"Approx. Comp", title:"AxBy: Approximate Computation Bypass for Data-Intensive Applications", authors:"Dongning Ma, Xun Jiao", venue:"Euromicro DSD, 2020", pdf:"http://www.ece.villanova.edu/~xjiao/paper/DSD2020.pdf" },
+      { id:"p45", year:2020, type:"CONF", topic:"Approx. Comp", title:"An Input-aware Learning-based Error Model of Voltage-Scaled Functional Units", authors:"Dongning Ma, Xun Jiao", venue:"SELSE, 2020", pdf:"" },
+      { id:"p46", year:2019, type:"CONF", topic:"Approx. Comp", title:"Work-in-Progress: DeVos: A Learning-based Delay Model of Voltage-Scaled Circuits", authors:"Dongning Ma, Siyu Shen, Xun Jiao", venue:"CODES+ISSS, 2019", pdf:"http://www.ece.villanova.edu/~xjiao/paper/CODES19.pdf" },
+      { id:"p47", year:2019, type:"CONF", topic:"Fuzz Testing", title:"EnFuzz: Ensemble Fuzzing with Seed Synchronization among Diverse Fuzzers", authors:"Yuanliang Chen, Yu Jiang, Fuchen Ma, Jie Liang, Mingzhe Wang, Chijin Zhou, Xun Jiao, and Zuo Su", venue:"USENIX Security, 2019", pdf:"http://www.ece.villanova.edu/~xjiao/paper/Security19.pdf" },
+      { id:"p48", year:2019, type:"CONF", topic:"Fuzz Testing", title:"Industry Practice of Coverage-guided Enterprise Linux Kernel Fuzzing", authors:"Heyuan Shi, Runzhe Wang, Ying Fu, Mingzhe Wang, Xiaohai Shi, Xun Jiao, Houbing Song, Yu Jiang, Jiaguang Sun", venue:"ESEC/FSE, 2019", pdf:"" },
+      { id:"p49", year:2019, type:"CONF", topic:"Robust AI", title:"Uncertainty Theory Based Reliability-Centric Cyber-Physical System Design", authors:"Yu Jiang, Mingzhe Wang, Xun Jiao, Houbing Song, Hui Kong, Rui Wang, Yongxin Liu, Jian Wang, Jiaguang Sun", venue:"CPSCom, 2019", pdf:"" },
+      { id:"p50", year:2019, type:"CONF", topic:"Approx. Comp", title:"Detecting and Bypassing Trivial Computations in Convolutional Neural Networks", authors:"Dongning Ma, Xun Jiao", venue:"NANOARCH, 2019", pdf:"http://www.ece.villanova.edu/~xjiao/paper/NANOARCH19.pdf" },
+      { id:"p51", year:2019, type:"CONF", topic:"Approx. Comp", title:"Energy Efficient GPU Applications Through Computation Skip", authors:"Dongning Ma, Xun Jiao", venue:"ICESS, 2019", pdf:"http://www.ece.villanova.edu/~xjiao/paper/ICESS19.pdf" },
+      { id:"p52", year:2018, type:"CONF", topic:"Approx. Comp", title:"Energy-Efficient Neural Networks using Approximate Computation Reuse", authors:"Xun Jiao, Vahideh Akhlaghi, Yu Jiang, and Rajesh Gupta", venue:"DATE, 2018", pdf:"http://mesl.ucsd.edu/pubs/Xun_DATE2018.pdf" },
+      { id:"p53", year:2018, type:"CONF", topic:"Fuzz Testing", title:"SAFL: increasing and accelerating testing coverage with symbolic execution and guided fuzzing", authors:"Mingzhe Wang, Jie Liang, Yuanliang Chen, Yu Jiang, Xun Jiao, Han Liu, Xibin Zhao, Jiaguang Sun", venue:"ICSE-Tool, 2018", pdf:"http://www.ece.villanova.edu/~xjiao/paper/ICSE18.pdf" },
+      { id:"p54", year:2017, type:"CONF", topic:"Fuzz Testing", title:"An Assessment of Vulnerability of Hardware Neural Networks to Dynamic Voltage and Temperature Variations", authors:"Xun Jiao, Mulong Luo, Jeng-Hau Lin, and Rajesh Gupta", venue:"ICCAD, 2017", pdf:"http://mesl.ucsd.edu/pubs/Xun_ICCAD17.pdf" },
+      { id:"p55", year:2017, type:"CONF", topic:"Approx. Comp", title:"Combining Structural and Timing Error in Overclocked Inexact Speculative Adders", authors:"Xun Jiao, Vincent Camus, Mattia Cacciotti, Yu Jiang, Christian Enz, and Rajesh Gupta", venue:"DATE, 2017", pdf:"http://mesl.ucsd.edu/pubs/Xun_DATE17b.pdf" },
+      { id:"p56", year:2017, type:"CONF", topic:"Approx. Comp", title:"SLoT: A Supervised Learning Model to Predict Dynamic Timing Errors of Functional Units", authors:"Xun Jiao, Yu Jiang, Abbas Rahimi, and Rajesh Gupta", venue:"DATE, 2017", pdf:"http://mesl.ucsd.edu/pubs/Xun_DATE17a.pdf" },
+      { id:"p57", year:2016, type:"CONF", topic:"Approx. Comp", title:"WILD: A Workload-Based Learning Model to Predict Dynamic Delay of Functional Units", authors:"Xun Jiao, Yu Jiang, Abbas Rahimi, and Rajesh Gupta", venue:"ICCD, 2016", pdf:"http://mesl.ucsd.edu/pubs/Xun_ICCD16.pdf" },
+      { id:"p58", year:2015, type:"CONF", topic:"Approx. Comp", title:"Supervised Learning Based Model for Predicting Variability-Induced Timing Errors", authors:"Xun Jiao, Abbas Rahimi, Balakrishnan Narayanaswamy, Hamed Fatemi, Jose Pineda de Gyvez, and Rajesh Gupta", venue:"NEWCAS, 2015", pdf:"http://mesl.ucsd.edu/pubs/Xun_NEWCAS15.pdf" },
+      { id:"p59", year:2012, type:"CONF", topic:"Robust AI", title:"Uncertain Model and Algorithm for Hardware/Software Partitioning", authors:"Yu Jiang, Hehua Zhang, Xun Jiao, Xiaoyu Song, William N.Hung, Ming Gu, and Jiaguang Sun", venue:"ISVLSI, 2012", pdf:"http://www.ece.villanova.edu/~xjiao/paper/ISVLSI.pdf" },
+      { id:"p60", year:2012, type:"CONF", topic:"Robust AI", title:"Reliability Analysis of PLC Systems by Bayesian Network", authors:"Hehua Zhang, Yu Jiang, Xun Jiao, Xiaoyu Song, William N.Hung, and Ming Gu", venue:"SERE, 2012", pdf:"http://www.ece.villanova.edu/~xjiao/paper/SERE.pdf" }
     ];
   }
 
   toggle(id){ this.setState(s=>({ openId: s.openId===id ? null : id })); }
   onSearch(e){ this.setState({ query:e.target.value }); }
   setTopic(t){ this.setState({ topic:t }); }
-  cite(id){ this.setState(s=>({ cited:{ ...s.cited, [id]: !s.cited[id] } })); }
+  setType(t){ this.setState({ ptype:t }); }
 
   renderVals(){
-    const { query, topic, openId, cited } = this.state;
+    const { query, topic, ptype, openId } = this.state;
+
+    const types = ['All','Journal','Conference'];
+    const typeKey = { 'Journal':'JOURNAL', 'Conference':'CONF' };
+    const typeChips = types.map(t=>{
+      const on = t===ptype;
+      return { label:t, onClick:()=>this.setType(t),
+        fg: on?'#fff':'#5A6079', bg: on?'#003087':'#fff', bd: on?'#003087':'#D8DEEC' };
+    });
+
     const topics = ['All', ...Object.keys(this.TOPICS)];
     const topicChips = topics.map(t=>{
       const on = t===topic;
@@ -191,6 +255,7 @@ class Component extends DCLogic {
 
     const q = query.trim().toLowerCase();
     const list = this.DATA
+      .filter(p=> ptype==='All' || p.type===typeKey[ptype])
       .filter(p=> topic==='All' || p.topic===topic)
       .filter(p=> !q || (p.title+' '+p.authors+' '+p.venue).toLowerCase().includes(q))
       .sort((a,b)=> b.year - a.year);
@@ -199,16 +264,18 @@ class Component extends DCLogic {
       const tc = this.TOPICS[p.topic] || this.TOPICS['Robust AI'];
       const ty = this.TYPE[p.type] || this.TYPE['CONF'];
       const open = openId===p.id;
+      const hasPdf = !!(p.pdf && p.pdf.length);
       return { ...p, accent:tc.accent, topicFg:tc.fg, topicBg:tc.bg, typeFg:ty.fg, typeBg:ty.bg,
+        venueFull: (p.type==='JOURNAL'?'Journal: ':'Conference: ') + p.venue,
+        hasPdf, noPdf: !hasPdf,
         open, caret: open?'rotate(180deg)':'rotate(0deg)',
-        pdf:'#', doi:'#',
-        citeLabel: cited[p.id] ? '✓ Copied BibTeX' : 'Cite',
-        onToggle:()=>this.toggle(p.id), onCite:()=>this.cite(p.id) };
+        onToggle:()=>this.toggle(p.id) };
     });
 
-    const n = list.length;
-    return { query, topicChips, pubs,
-      countLabel: n + (n===1?' publication':' publications') + (topic==='All'?'':' in '+topic),
+    const cnt = list.length;
+    const scope = (ptype==='All'?'':' '+ptype) + (topic==='All'?'':' \u00b7 '+topic);
+    return { query, typeChips, topicChips, pubs,
+      countLabel: cnt + (cnt===1?' publication':' publications') + scope,
       onSearch:(e)=>this.onSearch(e) };
   }
 }
