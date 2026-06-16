@@ -1,0 +1,7 @@
+name = "detail-lab-oauth"
+main = "src/worker.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+SITE_URL = "https://wdzhwsh4067.github.io/detail-lab-site/PaperReading.dc.html"
+SCOPE = "repo"
