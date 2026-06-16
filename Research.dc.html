@@ -74,18 +74,17 @@
             <span style="display:inline-flex;width:38px;height:38px;border-radius:10px;background:#EAF0FB;color:#003087;font-weight:800;font-size:14px;align-items:center;justify-content:center;">01</span>
             <span style="font-size:24px;">🛡️</span>
           </div>
-          <h2 style="font-size:21px;font-weight:800;margin:0 0 6px;color:#1A1A2E;letter-spacing:-.01em;">Robust &amp; Resilient AI</h2>
+          <h2 style="font-size:21px;font-weight:800;margin:0 0 6px;color:#1A1A2E;letter-spacing:-.01em;">Robust/Resilient AI/ML Systems</h2>
           <div style="display:flex;flex-wrap:wrap;gap:6px;">
             <span style="font-size:11px;font-weight:700;color:#003087;background:#EAF0FB;padding:3px 9px;border-radius:20px;">Hardware faults</span>
             <span style="font-size:11px;font-weight:700;color:#003087;background:#EAF0FB;padding:3px 9px;border-radius:20px;">Adversarial ML</span>
           </div>
         </div>
         <div>
-          <p style="font-size:14.5px;line-height:1.6;color:#41485E;margin:0 0 12px;">Deep models are increasingly deployed on unreliable hardware and exposed to adversarial inputs. We study how bit-flips, timing errors, and crafted perturbations degrade accuracy — and design <strong>fault-aware training</strong> and <strong>selective protection</strong> schemes that keep networks dependable at minimal overhead.</p>
+          <p style="font-size:14.5px;line-height:1.6;color:#41485E;margin:0 0 12px;">A "good" AI is not just about accuracy. It also needs to be robust/resilient against uncertainties, e.g., hardware faults/errors, adversarial input data, environmental variations, etc. How to make robust AI systems?</p>
           <ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;color:#5A6079;">
-            <li>Criticality-aware ECC for quantized weights</li>
-            <li>Resilient accelerator architectures</li>
-            <li>Certified robustness under combined HW + adversarial faults</li>
+            <li><a href="https://arxiv.org/pdf/2007.06226.pdf" target="_blank" style="color:#2A6FDB;font-weight:600;">Algorithm-level Analysis ↗</a></li>
+            <li><a href="http://www.ece.villanova.edu/~xjiao/paper/DT20.pdf" target="_blank" style="color:#2A6FDB;font-weight:600;">Hardware-level Analysis ↗</a></li>
           </ul>
         </div>
       </div>
@@ -103,11 +102,11 @@
           </div>
         </div>
         <div>
-          <p style="font-size:14.5px;line-height:1.6;color:#41485E;margin:0 0 12px;">Energy is the binding constraint at the edge. We trade a little accuracy for large energy savings through <strong>approximate arithmetic</strong> and <strong>voltage overscaling</strong>, then recover quality with hardware-aware retraining — mapping the full energy–accuracy Pareto frontier.</p>
+          <p style="font-size:14.5px;line-height:1.6;color:#41485E;margin:0 0 12px;">As transistors become even smaller, hardware is more susceptible to errors/faults. How can we make reliable hardware?</p>
           <ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;color:#5A6079;">
-            <li>Approximate multiplier design-space exploration</li>
-            <li>Voltage/timing-error modeling for accelerators</li>
-            <li>Quality-configurable inference</li>
+            <li><a href="https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/DEVoT.pdf" target="_blank" style="color:#2A6FDB;font-weight:600;">Timing Error Prediction of Hardware ↗</a></li>
+            <li><a href="https://arxiv.org/abs/2307.11124" target="_blank" style="color:#2A6FDB;font-weight:600;">Approximate Computing Survey Part 1 ↗</a></li>
+            <li><a href="https://arxiv.org/abs/2307.11128" target="_blank" style="color:#2A6FDB;font-weight:600;">Approximate Computing Survey Part 2 ↗</a></li>
           </ul>
         </div>
       </div>
@@ -125,11 +124,12 @@
           </div>
         </div>
         <div>
-          <p style="font-size:14.5px;line-height:1.6;color:#41485E;margin:0 0 12px;">Bugs hide at the seams between hardware, firmware, software, and AI runtimes. We develop <strong>structure-aware, coverage-guided fuzzers</strong> and <strong>differential oracles</strong> that surface crashes and silent correctness bugs across the whole stack.</p>
+          <p style="font-size:14.5px;line-height:1.6;color:#41485E;margin:0 0 12px;">A computing system needs comprehensive testing and validation. Fuzz testing is a popular testing method. Here are some examples:</p>
           <ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;color:#5A6079;">
-            <li>Fuzzing LLM inference runtimes</li>
-            <li>Firmware &amp; hardware-model fuzzing</li>
-            <li>Unified fault-injection + fuzzing harnesses</li>
+            <li><a href="https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/DEVoT.pdf" target="_blank" style="color:#2A6FDB;font-weight:600;">Fuzzing on Hardware ↗</a></li>
+            <li><a href="http://www.ece.villanova.edu/~xjiao/paper/DAC21.pdf" target="_blank" style="color:#2A6FDB;font-weight:600;">Fuzzing on AI Models ↗</a></li>
+            <li><a href="http://www.ece.villanova.edu/~xjiao/paper/Security19.pdf" target="_blank" style="color:#2A6FDB;font-weight:600;">Fuzzing on Software ↗</a></li>
+            <li><a href="http://www.wingtecher.com/themes/WingTecherResearch/assets/papers/EMSOFT20.pdf" target="_blank" style="color:#2A6FDB;font-weight:600;">Fuzzing on Firmware ↗</a></li>
           </ul>
         </div>
       </div>
@@ -148,11 +148,11 @@
           </div>
         </div>
         <div>
-          <p style="font-size:14.5px;line-height:1.6;color:#403714;margin:0 0 12px;">Inspired by the brain's high-dimensional representations, <strong>hyperdimensional computing (HDC)</strong> encodes data into long hypervectors that are single-pass trainable, noise-tolerant, and energy-frugal. Our work spans drug discovery, genomics, and NLP — and was <strong>featured in WIRED</strong>.</p>
+          <p style="font-size:14.5px;line-height:1.6;color:#403714;margin:0 0 12px;">Hyperdimensional computing (HDC) is an emerging AI model family mimicking the "human brain". It achieves success in various applications. Check this coverage from <a href="https://www.wired.com/story/hyperdimensional-computing-reimagines-artificial-intelligence/" target="_blank" style="color:#8A6A1E;font-weight:700;text-decoration:underline;">WIRED</a>, and a few examples below.</p>
           <ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;color:#5A5132;">
-            <li>MoleHD: molecular property prediction</li>
-            <li>HDC for genomic sequence classification</li>
-            <li>Co-designed approximate HDC accelerators</li>
+            <li><a href="https://arxiv.org/pdf/2311.17852.pdf" target="_blank" style="color:#8A6A1E;font-weight:600;">In-memory Computing for Hyperdimensional Computing ↗</a></li>
+            <li><a href="https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/TCAD2023_HDTest_.pdf" target="_blank" style="color:#8A6A1E;font-weight:600;">Adversarial Attack on Hyperdimensional Computing ↗</a></li>
+            <li><a href="https://github.com/VU-DETAIL/vu-detail.github.io/blob/master/asset/DATE2022_HDVolt.pdf" target="_blank" style="color:#8A6A1E;font-weight:600;">Energy-efficient Hyperdimensional Computing ↗</a></li>
           </ul>
         </div>
       </div>
@@ -167,19 +167,19 @@
       <div class="detail-projects" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
         <div class="detail-proj" style="background:#fff;border:1px solid #E1E6F0;border-radius:14px;padding:20px;">
           <div style="font-size:15px;font-weight:800;color:#003087;margin-bottom:6px;">DEVoT</div>
-          <p style="font-size:12.5px;line-height:1.5;color:#5A6079;margin:0;">Voltage-overscaled accelerators with dynamic error tolerance.</p>
+          <p style="font-size:12.5px;line-height:1.5;color:#5A6079;margin:0;">Dynamic delay modeling of functional units under voltage and temperature variations (TCAD'21).</p>
         </div>
         <div class="detail-proj" style="background:#fff;border:1px solid #E1E6F0;border-radius:14px;padding:20px;">
           <div style="font-size:15px;font-weight:800;color:#2A6FDB;margin-bottom:6px;">LEVAX</div>
-          <p style="font-size:12.5px;line-height:1.5;color:#5A6079;margin:0;">Learning-enabled approximate computing for vision workloads.</p>
+          <p style="font-size:12.5px;line-height:1.5;color:#5A6079;margin:0;">Input-aware learning-based error model of voltage-scaled functional units (TCAD'20).</p>
         </div>
         <div class="detail-proj" style="background:#fff;border:1px solid #E1E6F0;border-radius:14px;padding:20px;">
-          <div style="font-size:15px;font-weight:800;color:#0E8A7A;margin-bottom:6px;">FuzzStack</div>
-          <p style="font-size:12.5px;line-height:1.5;color:#5A6079;margin:0;">Cross-layer fuzzing harness for HW, firmware &amp; AI runtimes.</p>
+          <div style="font-size:15px;font-weight:800;color:#0E8A7A;margin-bottom:6px;">HDTest</div>
+          <p style="font-size:12.5px;line-height:1.5;color:#5A6079;margin:0;">Differential fuzz testing of brain-inspired hyperdimensional computing (DAC'21).</p>
         </div>
         <div class="detail-proj" style="background:#fff;border:1px solid #EAD9A8;border-radius:14px;padding:20px;border-top:3px solid #C79A3A;">
           <div style="font-size:15px;font-weight:800;color:#8A6A1E;margin-bottom:6px;">MoleHD ★</div>
-          <p style="font-size:12.5px;line-height:1.5;color:#5A6079;margin:0;">Hyperdimensional computing for low-cost drug discovery.</p>
+          <p style="font-size:12.5px;line-height:1.5;color:#5A6079;margin:0;">Efficient drug discovery using brain-inspired hyperdimensional computing (BIBM'22).</p>
         </div>
       </div>
     </div>
