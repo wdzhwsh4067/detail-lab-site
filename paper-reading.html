@@ -213,9 +213,9 @@
                 <sc-for list="{{ filtered }}" as="s" hint-placeholder-count="4">
                   <div class="detail-session" style="background:{{ s.bg }};border:1px solid {{ s.bd }};border-left:4px solid {{ s.accent }};border-radius:11px;padding:13px 15px;">
                     <div onClick="{{ s.onClick }}" style="cursor:pointer;">
-                      <div style="font-size:11px;color:#8A90A6;font-weight:600;margin-bottom:4px;font-variant-numeric:tabular-nums;">{{ s.dateLabel }} · {{ s.venue }}</div>
+                      <div style="font-size:11px;color:#8A90A6;font-weight:600;margin-bottom:4px;font-variant-numeric:tabular-nums;">{{ s.metaLine }}</div>
                       <div style="font-size:13.5px;font-weight:700;line-height:1.35;color:{{ s.titleColor }};">{{ s.title }}</div>
-                      <div style="font-size:11.5px;color:#8A90A6;margin-top:5px;">🎙️ {{ s.presenter }} {{ s.toggleHint }}</div>
+                      <div style="font-size:11.5px;color:#8A90A6;margin-top:5px;">{{ s.presenterLabel }} {{ s.toggleHint }}</div>
                     </div>
                     {{ s.bodyEl }}
                   </div>
@@ -669,7 +669,10 @@ class Component extends DCLogic {
             )
           : null;
         const toggleHint = React.createElement('span', { className:'detail-mobile-hint', style:{ color:'#2A6FDB', fontWeight:700 } }, on ? '▲ Collapse' : '▼ Expand');
-        return { ...s, dateLabel:this.fmtDate(s.date), accent, bodyEl, toggleHint,
+        const dateLabel = this.fmtDate(s.date);
+        return { ...s, dateLabel, accent, bodyEl, toggleHint,
+          metaLine: dateLabel + (s.venue ? ' · ' + s.venue : ''),
+          presenterLabel: s.presenter ? ('🎙️ ' + s.presenter) : '',
           bg: on ? '#EEF3FC' : '#fff', bd: on ? '#Bcd0f0' : '#E1E6F0',
           titleColor: on ? '#003087' : '#1A1A2E', onClick:()=>this.select(s) };
       });
