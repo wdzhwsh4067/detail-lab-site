@@ -165,7 +165,7 @@
               <div class="detail-submit-grid" style="display:grid;grid-template-columns:1fr;gap:14px;">
                 <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Paper title *<input value="{{ fTitle }}" onInput="{{ onTitle }}" placeholder="Title of the paper" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
                 <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Paper URL<input value="{{ fPaperUrl }}" onInput="{{ onPaperUrl }}" placeholder="https://…" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
-                <label style="display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:700;color:#41485E;">Tags <span style="font-weight:500;color:#8A90A6;">(pick a member)</span>
+                <label style="display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:700;color:#41485E;">Author <span style="font-weight:500;color:#8A90A6;">(pick an author)</span>
                   <div style="display:flex;flex-wrap:wrap;gap:7px;">
                     <sc-for list="{{ tagOptions }}" as="opt" hint-placeholder-count="6">
                       <span onClick="{{ opt.onClick }}" style="cursor:pointer;font-size:12px;font-weight:700;padding:6px 13px;border-radius:20px;color:{{ opt.fg }};background:{{ opt.bg }};border:1px solid {{ opt.bd }};">{{ opt.label }}</span>
@@ -270,7 +270,7 @@ const GH_API = 'https://api.github.com/repos/' + DETAIL_OWNER + '/' + DETAIL_CON
 const ghHeaders = (token) => ({ 'Authorization':'Bearer ' + token, 'Accept':'application/vnd.github+json' });
 const b64decode = (b64) => decodeURIComponent(escape(atob((b64||'').replace(/\s/g,''))));
 // Fixed set of session tags (members). Edit this list to rename / add members; users can only pick from it.
-const SESSION_TAGS = ['Ruixuan Wang','Jinghao Wen','Xulei Zhang','Shaohuang Wang'];
+const SESSION_TAGS = ['Ruixuan Wang','Jinghao Wen','Xulei Zhang','Shaohuang Wang','Minghao Li'];
 
 class Component extends DCLogic {
   state = {
