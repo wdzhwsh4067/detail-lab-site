@@ -127,7 +127,7 @@
       <div style="width:100%;max-width:460px;background:#fff;border:1px solid #F3C6CC;border-radius:18px;padding:36px 34px;text-align:center;box-shadow:0 24px 60px -34px rgba(60,20,30,.35);">
         <div style="width:60px;height:60px;border-radius:16px;background:#FBE6DA;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:28px;">🚫</div>
         <h2 style="font-size:22px;font-weight:800;margin:0 0 8px;color:#1A1A2E;letter-spacing:-.01em;">No access</h2>
-        <p style="font-size:14px;line-height:1.6;color:#5A6079;margin:0 0 24px;">Your GitHub account isn't a collaborator on the reading-content repository. Ask the PI (<a href="mailto:xun.jiao@villanova.edu" style="color:#2A6FDB;font-weight:600;">xun.jiao@villanova.edu</a>) to add you.</p>
+        <p style="font-size:14px;line-height:1.6;color:#5A6079;margin:0 0 24px;">Your GitHub account isn't authorized yet. Please accept the GitHub organization / repository invitation email sent to you, then reload this page to gain access. Didn't get one? Ask the PI (<a href="mailto:xun.jiao@villanova.edu" style="color:#2A6FDB;font-weight:600;">xun.jiao@villanova.edu</a>) to invite you.</p>
         <button onClick="{{ logout }}" style="background:#003087;color:#fff;font-weight:700;font-size:14px;padding:12px 22px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;">Try a different account</button>
       </div>
     </section>
@@ -278,6 +278,7 @@ class Component extends DCLogic {
     auth: 'anon', showToken: false, tokenInput: '', accessMsg: '', memberLabel: 'DETAIL members',
     showPw: false, pwInput: '', viewSession: null,
     showSubmit: false, submitStatus: null, submitMsg: '',
+    commentsCache: {}, commentInput: '', commentStatus: null, commentMsg: '',
     form: { owner:'detail-vu', repo:'detail-lab-content', branch:'main', token:'',
             date:'', title:'', presenter:'', venue:'', tags:[], paperUrl:'', body:'' }
   };
@@ -394,7 +395,7 @@ class Component extends DCLogic {
       sessions.sort((a,b)=> (a.date < b.date ? 1 : -1));
       const first = sessions[0];
       this.setState({ sessions, status:'ready', activeId: first ? first.id : null });
-      if(first) this.loadMd(first);
+      if(first){ this.loadMd(first); this.loadComments(first); }
     } catch(e){ this.setState({ status:'error' }); }
   }
 
@@ -410,12 +411,92 @@ class Component extends DCLogic {
     }
   }
 
+  // ── COMMENTS (stored in the content repo, one JSON file per session) ──
+  async loadComments(session){
+    if(this.state.commentsCache[session.id]) return;
+    try {
+      const res = await this.cget('data/reading/comments/' + session.id + '.json');
+      if(res.status!==200 && res.status!==404) return; // transient — don't cache, allow retry next open
+      let arr = [];
+      if(res.status===200){ try { arr = JSON.parse(b64decode((await res.json()).content)); } catch(e){ arr = []; } }
+      if(!Array.isArray(arr)) arr = [];
+      this.setState(s=>({ commentsCache: { ...s.commentsCache, [session.id]: arr } }));
+    } catch(e){ /* network error — leave uncached so it retries on next open */ }
+  }
+
+  onCommentInput(e){ this.setState({ commentInput: e.target.value }); }
+
+  async postComment(session){
+    const body = (this.state.commentInput||'').trim();
+    const token = this.state.form.token;
+    if(!token){ return; } // only GitHub-authed members can post
+    if(!body){ this.setState({ commentStatus:'error', commentMsg:'Write something first.' }); return; }
+    this.setState({ commentStatus:'working', commentMsg:'Posting…' });
+    const api = 'https://api.github.com/repos/' + DETAIL_OWNER + '/' + DETAIL_CONTENT_REPO + '/contents/';
+    const path = 'data/reading/comments/' + session.id + '.json';
+    const headers = { 'Authorization':'Bearer ' + token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' };
+    const enc = (str)=> btoa(unescape(encodeURIComponent(str)));
+    const _d = new Date();
+    const date = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
+    const entry = { author: this.state.memberLabel || 'member', date, body };
+    try {
+      let lastErr;
+      // GET current file -> append -> PUT. Retry once if another writer raced us (409/422).
+      for(let attempt=0; attempt<2; attempt++){
+        let arr = [], sha;
+        const cur = await fetch(api + path + '?ref=' + DETAIL_BRANCH, { headers });
+        if(cur.status===200){ const j = await cur.json(); sha = j.sha; try { arr = JSON.parse(b64decode(j.content)); } catch(e){ arr = []; } }
+        if(!Array.isArray(arr)) arr = [];
+        arr.push(entry);
+        const payload = { message:'Comment on ' + session.id, content: enc(JSON.stringify(arr, null, 2) + '\n'), branch: DETAIL_BRANCH };
+        if(sha) payload.sha = sha;
+        const put = await fetch(api + path, { method:'PUT', headers, body: JSON.stringify(payload) });
+        if(put.ok){
+          this.setState(s=>({ commentStatus:'success', commentMsg:'✓ Posted.', commentInput:'', commentsCache: { ...s.commentsCache, [session.id]: arr } }));
+          return;
+        }
+        const j = await put.json().catch(()=>({}));
+        lastErr = (j && j.message) || ('HTTP ' + put.status);
+        if(put.status!==409 && put.status!==422) throw new Error(lastErr);
+      }
+      throw new Error(lastErr || 'conflict — try again');
+    } catch(e){ this.setState({ commentStatus:'error', commentMsg:'⚠ ' + (e.message || 'Failed to post.') }); }
+  }
+
+  // Renders the comments block for a session (used by both desktop and mobile views).
+  commentsEl(session){
+    if(!session) return null;
+    const list = this.state.commentsCache[session.id];
+    const items = Array.isArray(list) ? list : [];
+    const kids = [];
+    kids.push(React.createElement('h3', { key:'h', style:{ fontSize:'15px', fontWeight:800, color:'#1A1A2E', margin:'0 0 10px' } }, '💬 Comments (' + items.length + ')'));
+    if(items.length===0){ kids.push(React.createElement('div', { key:'empty', style:{ color:'#8A90A6', fontSize:'13px', margin:'0 0 12px' } }, 'No comments yet.')); }
+    items.forEach((c, i)=> kids.push(
+      React.createElement('div', { key:'c'+i, style:{ borderTop:'1px solid #EEF1F8', padding:'10px 0' } },
+        React.createElement('div', { style:{ fontSize:'12px', fontWeight:700, color:'#003087' } }, (c.author || 'member') + (c.date ? ' · ' + c.date : '')),
+        React.createElement('div', { style:{ fontSize:'13.5px', color:'#2A3047', lineHeight:1.6, whiteSpace:'pre-wrap', marginTop:'3px' } }, c.body || '')
+      )
+    ));
+    if(this.state.auth==='authorized'){
+      kids.push(React.createElement('textarea', { key:'ta', value:this.state.commentInput, onInput:(e)=>this.onCommentInput(e), placeholder:'Add a comment…', rows:3,
+        style:{ width:'100%', marginTop:'12px', border:'1px solid #D8DEEC', borderRadius:'9px', padding:'10px 12px', fontSize:'13.5px', fontFamily:'inherit', lineHeight:1.55, color:'#1A1A2E', background:'#fff', outline:'none', resize:'vertical', boxSizing:'border-box' } }));
+      kids.push(React.createElement('div', { key:'row', style:{ display:'flex', alignItems:'center', gap:'12px', marginTop:'10px', flexWrap:'wrap' } },
+        React.createElement('button', { onClick:()=>this.postComment(session), style:{ background:'#003087', color:'#fff', fontWeight:700, fontSize:'13.5px', padding:'10px 20px', borderRadius:'9px', border:'none', cursor:'pointer', fontFamily:'inherit' } }, this.state.commentStatus==='working' ? 'Posting…' : 'Post comment'),
+        this.state.commentMsg ? React.createElement('span', { style:{ fontSize:'12.5px', fontWeight:600, color: this.state.commentStatus==='success' ? '#1F6B3B' : this.state.commentStatus==='error' ? '#C8102E' : '#8A90A6' } }, this.state.commentMsg) : null
+      ));
+    } else {
+      kids.push(React.createElement('div', { key:'ro', style:{ color:'#8A90A6', fontSize:'12.5px', marginTop:'8px' } }, 'Log in with GitHub to comment.'));
+    }
+    return React.createElement('div', { className:'detail-comments', style:{ marginTop:'24px', borderTop:'2px solid #EBC76A', paddingTop:'16px' } }, ...kids);
+  }
+
   select(session){
     // Mobile (<=820px): tapping the already-open card's header collapses it.
     // Desktop keeps the original behaviour (stays open, master-detail panel).
     const isMobile = typeof window!=='undefined' && window.matchMedia && window.matchMedia('(max-width:820px)').matches;
     if(isMobile && this.state.activeId === session.id){ this.setState({ activeId: null }); return; }
-    this.setState({ activeId: session.id }); this.loadMd(session);
+    this.setState({ activeId: session.id, commentInput:'', commentMsg:'', commentStatus:null });
+    this.loadMd(session); this.loadComments(session);
   }
   onSearch(e){ this.setState({ query: e.target.value }); }
   setTag(t){ this.setState({ tag: t }); }
@@ -527,10 +608,11 @@ class Component extends DCLogic {
               ),
               (smd
                 ? React.createElement('div', { className:'detail-md', dangerouslySetInnerHTML:{ __html: this.parseMd(smd) } })
-                : React.createElement('div', { style:{ color:'#8A90A6', fontSize:'13px', padding:'8px 0' } }, 'Loading…'))
+                : React.createElement('div', { style:{ color:'#8A90A6', fontSize:'13px', padding:'8px 0' } }, 'Loading…')),
+              this.commentsEl(s)
             )
           : null;
-        const toggleHint = React.createElement('span', { className:'detail-mobile-hint', style:{ color:'#2A6FDB', fontWeight:700 } }, on ? '▲ 收起' : '▼ 展开');
+        const toggleHint = React.createElement('span', { className:'detail-mobile-hint', style:{ color:'#2A6FDB', fontWeight:700 } }, on ? '▲ Collapse' : '▼ Expand');
         return { ...s, dateLabel:this.fmtDate(s.date), accent, bodyEl, toggleHint,
           bg: on ? '#EEF3FC' : '#fff', bd: on ? '#Bcd0f0' : '#E1E6F0',
           titleColor: on ? '#003087' : '#1A1A2E', onClick:()=>this.select(s) };
@@ -538,9 +620,12 @@ class Component extends DCLogic {
 
     const active = sessions.find(s=>s.id===activeId);
     const md = active ? mdCache[active.id] : null;
-    const articleEl = md
+    const articleBody = md
       ? React.createElement('div', { className:'detail-md', dangerouslySetInnerHTML:{ __html: this.parseMd(md) } })
       : React.createElement('div', { style:{ color:'#8A90A6', fontSize:'14px', padding:'20px 0' } }, 'Loading session…');
+    const articleEl = active
+      ? React.createElement(React.Fragment, null, articleBody, this.commentsEl(active))
+      : articleBody;
 
     const f = this.state.form;
     const H = (k)=> (e)=> this.setField(k, e.target.value);
