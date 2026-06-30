@@ -228,8 +228,9 @@
                   <span style="font-size:11px;font-weight:700;color:#003087;background:#EAF0FB;padding:3px 10px;border-radius:20px;">{{ t }}</span>
                 </sc-for>
                 <a href="{{ activePaperUrl }}" target="_blank" style="margin-left:auto;font-size:12.5px;font-weight:700;color:#2A6FDB;display:inline-flex;align-items:center;gap:5px;">Read the paper ↗</a>
-                <sc-if value="{{ canSubmit }}">
-                  <span onClick="{{ editActive }}" style="cursor:pointer;font-size:12.5px;font-weight:700;color:#9B2330;display:inline-flex;align-items:center;gap:4px;margin-left:14px;">✏️ Edit</span>
+                <sc-if value="{{ canEditActive }}">
+                  <span onClick="{{ editActive }}" style="cursor:pointer;font-size:12.5px;font-weight:700;color:#2A6FDB;display:inline-flex;align-items:center;gap:4px;margin-left:14px;">✏️ Edit</span>
+                  <span onClick="{{ deleteActive }}" style="cursor:pointer;font-size:12.5px;font-weight:700;color:#9B2330;display:inline-flex;align-items:center;gap:4px;margin-left:12px;">🗑️ Delete</span>
                 </sc-if>
               </div>
               {{ articleEl }}
@@ -286,7 +287,7 @@ const SESSION_TAGS = ['Ruixuan Wang','Jinghao Wen','Xulei Zhang','Shaohuang Wang
 class Component extends DCLogic {
   state = {
     sessions: [], activeId: null, mdCache: {}, query: '', tag: 'All', status: 'loading',
-    auth: 'anon', showToken: false, tokenInput: '', accessMsg: '', memberLabel: 'DETAIL members',
+    auth: 'anon', showToken: false, tokenInput: '', accessMsg: '', memberLabel: 'DETAIL members', ghLogin: '',
     showPw: false, pwInput: '', viewSession: null, deniedLogin: '',
     showSubmit: false, submitStatus: null, submitMsg: '',
     commentsCache: {}, commentInput: '', commentStatus: null, commentMsg: '',
@@ -364,10 +365,10 @@ class Component extends DCLogic {
     try {
       const res = await fetch(GH_API + 'data/reading/index.json?ref=' + DETAIL_BRANCH, { headers: ghHeaders(token) });
       if(res.status === 200){
-        let label = 'DETAIL member';
-        try { const u = await fetch('https://api.github.com/user',{headers:ghHeaders(token)}); if(u.ok){ const uj=await u.json(); label = uj.login || label; } } catch(e){}
+        let login = '';
+        try { const u = await fetch('https://api.github.com/user',{headers:ghHeaders(token)}); if(u.ok){ const uj=await u.json(); login = uj.login || ''; } } catch(e){}
         try { localStorage.setItem('detail_gh_token', token); } catch(e){}
-        this.setState({ auth:'authorized', memberLabel: label, accessMsg:'', form:{ ...this.state.form, token, owner:DETAIL_OWNER, repo:DETAIL_CONTENT_REPO, branch:DETAIL_BRANCH } });
+        this.setState({ auth:'authorized', memberLabel: login || 'DETAIL member', ghLogin: login, accessMsg:'', form:{ ...this.state.form, token, owner:DETAIL_OWNER, repo:DETAIL_CONTENT_REPO, branch:DETAIL_BRANCH } });
         this.loadIndex();
       } else if([401,403,404].includes(res.status)){
         let who = '';
@@ -552,12 +553,45 @@ class Component extends DCLogic {
   // ── SUBMIT ─────────────────────────────────────────────
   toggleSubmit(){ this.setState(s=>({ showSubmit: !s.showSubmit, editingId:null, editingFile:null, editingDate:null })); }
   newSession(){ this.setState(s=>({ showSubmit:true, editingId:null, editingFile:null, editingDate:null, submitStatus:null, submitMsg:'', form:{ ...s.form, title:'', presenter:'', venue:'', tags:[], paperUrl:'', body:'' } })); }
+  // A member may edit/delete only their own posts (or legacy posts with no owner). UI-level.
+  canEdit(session){ return this.state.auth==='authorized' && !!session && (!session.owner || (!!this.state.ghLogin && session.owner === this.state.ghLogin)); }
   async startEdit(session){
+    if(!this.canEdit(session)) return;
     let body = '';
     try { const res = await this.cget('data/reading/' + session.file); if(res.status===200){ const t = b64decode((await res.json()).content); const lines = t.replace(/\r\n/g,'\n').split('\n'); if(lines.length && /^#\s/.test(lines[0])) lines.shift(); while(lines.length && lines[0].trim()==='') lines.shift(); body = lines.join('\n'); } } catch(e){}
     this.setState(s=>({ showSubmit:true, editingId: session.id, editingFile: session.file, editingDate: session.date, submitStatus:null, submitMsg:'',
       form: { ...s.form, title: session.title||'', paperUrl: session.paperUrl||'', presenter: session.presenter||'', venue: session.venue||'', tags: Array.isArray(session.tags)?session.tags.slice():[], body } }));
     if(typeof window!=='undefined'){ try { window.scrollTo({ top:0, behavior:'smooth' }); } catch(e){} }
+  }
+  async deleteSession(session){
+    if(!this.canEdit(session)) return;
+    const f = this.state.form; const token = f.token;
+    if(!token) return;
+    if(typeof window!=='undefined' && !window.confirm('Delete "' + (session.title||'this session') + '"? This cannot be undone.')) return;
+    try {
+      const enc = (str)=> btoa(unescape(encodeURIComponent(str)));
+      const dec = (b64)=> decodeURIComponent(escape(atob((b64||'').replace(/\s/g,''))));
+      const api = 'https://api.github.com/repos/' + f.owner + '/' + f.repo + '/contents/';
+      const headers = { 'Authorization':'Bearer ' + token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' };
+      const getJson = async (path)=>{ const r = await fetch(api + path + '?ref=' + encodeURIComponent(f.branch), { headers, cache:'no-store' }); if(r.status===404) return null; if(!r.ok) throw new Error('GET ' + path + ' (' + r.status + ')'); return r.json(); };
+      const del = async (path, sha, msg)=>{ const r = await fetch(api + path, { method:'DELETE', headers, body: JSON.stringify({ message: msg, sha, branch: f.branch }) }); if(!r.ok && r.status!==404){ const j = await r.json().catch(()=>({})); throw new Error((j && j.message) || ('HTTP ' + r.status)); } };
+      const mdMeta = await getJson('data/reading/' + session.file);
+      if(mdMeta && mdMeta.sha) await del('data/reading/' + session.file, mdMeta.sha, 'Delete reading session: ' + session.title);
+      const cMeta = await getJson('data/reading/comments/' + session.id + '.json');
+      if(cMeta && cMeta.sha) await del('data/reading/comments/' + session.id + '.json', cMeta.sha, 'Delete comments: ' + session.id);
+      let done = false, lastErr;
+      for(let attempt=0; attempt<3 && !done; attempt++){
+        const idxJson = await getJson('data/reading/index.json');
+        if(!idxJson) throw new Error('index.json not found');
+        const arr = JSON.parse(dec(idxJson.content));
+        const list = (Array.isArray(arr) ? arr : []).filter(x=> x && x.id !== session.id);
+        const r = await fetch(api + 'data/reading/index.json', { method:'PUT', headers, body: JSON.stringify({ message:'Remove reading session: ' + session.title, content: enc(JSON.stringify(list,null,2) + '\n'), sha: idxJson.sha, branch: f.branch }) });
+        if(r.ok){ done = true; } else { const j = await r.json().catch(()=>({})); lastErr = (j && j.message) || ('HTTP ' + r.status); if(r.status!==409 && r.status!==422) throw new Error(lastErr); }
+      }
+      if(!done) throw new Error(lastErr || 'index conflict — try again');
+      this.setState(s=>{ const mc = { ...s.mdCache }; delete mc[session.id]; const cc = { ...s.commentsCache }; delete cc[session.id]; return { mdCache: mc, commentsCache: cc, activeId: (s.activeId===session.id ? null : s.activeId) }; });
+      this.loadIndex();
+    } catch(e){ if(typeof window!=='undefined') window.alert('Delete failed: ' + (e.message || 'error')); }
   }
   setField(k,v){ this.setState(s=>({ form: { ...s.form, [k]: v } })); }
   toggleTag(name){ this.setState(s=>{ const has=(s.form.tags||[]).includes(name); return { form: { ...s.form, tags: has ? [] : [ name ] } }; }); }
@@ -602,7 +636,7 @@ class Component extends DCLogic {
       const existingMd = await getJson('data/reading/' + file);
       await put('data/reading/' + file, { message:(editing?'Edit':'Add')+' reading session: ' + title, content: enc(md), branch: f.branch, ...(existingMd && existingMd.sha ? { sha: existingMd.sha } : {}) });
       // Update the index with a FRESH sha; retry if it changed under us (409/422).
-      const entry = { id:slug, date:date, title:title, presenter:f.presenter||'', venue:f.venue||'', tags:tagsArr, file, paperUrl:f.paperUrl||'' };
+      const entry = { id:slug, date:date, title:title, presenter:f.presenter||'', venue:f.venue||'', tags:tagsArr, file, paperUrl:f.paperUrl||'', owner: this.state.ghLogin || '' };
       let done = false, lastErr;
       for(let attempt=0; attempt<3 && !done; attempt++){
         const idxJson = await getJson('data/reading/index.json');
@@ -610,7 +644,7 @@ class Component extends DCLogic {
         const arr = JSON.parse(dec(idxJson.content));
         let list = Array.isArray(arr) ? arr : [];
         if(editing && list.some(x=> x && x.id===slug)){
-          list = list.map(x=> (x && x.id===slug) ? entry : x); // replace in place, keep order
+          list = list.map(x=> (x && x.id===slug) ? { ...entry, owner: (x.owner || entry.owner) } : x); // replace in place, keep order + original owner
         } else {
           list = list.filter(x=> x && x.id!==slug); list.unshift(entry); // new (or recover orphan)
         }
@@ -660,7 +694,8 @@ class Component extends DCLogic {
               React.createElement('div', { style:{ display:'flex', flexWrap:'wrap', gap:'6px', alignItems:'center', marginBottom:'12px' } },
                 ...((s.tags||[]).map((t,ti)=> React.createElement('span', { key:'t'+ti, style:{ fontSize:'10.5px', fontWeight:700, color:'#003087', background:'#EAF0FB', padding:'3px 9px', borderRadius:'20px' } }, t))),
                 (s.paperUrl ? React.createElement('a', { href:s.paperUrl, target:'_blank', rel:'noopener', style:{ marginLeft:'auto', fontSize:'12px', fontWeight:700, color:'#2A6FDB' } }, 'Read the paper ↗') : null),
-                (this.state.auth==='authorized' ? React.createElement('span', { onClick:()=>this.startEdit(s), style:{ cursor:'pointer', marginLeft: (s.paperUrl?'14px':'auto'), fontSize:'12px', fontWeight:700, color:'#9B2330' } }, '✏️ Edit') : null)
+                (this.canEdit(s) ? React.createElement('span', { onClick:()=>this.startEdit(s), style:{ cursor:'pointer', marginLeft: (s.paperUrl?'14px':'auto'), fontSize:'12px', fontWeight:700, color:'#2A6FDB' } }, '✏️ Edit') : null),
+                (this.canEdit(s) ? React.createElement('span', { onClick:()=>this.deleteSession(s), style:{ cursor:'pointer', marginLeft:'12px', fontSize:'12px', fontWeight:700, color:'#9B2330' } }, '🗑️ Delete') : null)
               ),
               (smd
                 ? React.createElement('div', { className:'detail-md', dangerouslySetInnerHTML:{ __html: this.parseMd(smd) } })
@@ -730,6 +765,8 @@ class Component extends DCLogic {
       toggleSubmit: ()=>this.toggleSubmit(),
       newSession: ()=>this.newSession(),
       editActive: ()=>{ if(active) this.startEdit(active); },
+      deleteActive: ()=>{ if(active) this.deleteSession(active); },
+      canEditActive: active ? this.canEdit(active) : false,
       submitPanelTitle: this.state.editingId ? '✏️ Edit reading session' : '➕ Submit a reading session',
       onSubmit: ()=>this.submitSession(),
       submitLabel: this.state.submitStatus==='working' ? (this.state.editingId?'Saving…':'Committing…') : (this.state.editingId?'Save changes':'Commit session'),
