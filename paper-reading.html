@@ -98,36 +98,19 @@
       <div style="width:100%;max-width:460px;background:#fff;border:1px solid #E1E6F0;border-radius:18px;padding:36px 34px;text-align:center;box-shadow:0 24px 60px -34px rgba(20,30,60,.4);">
         <div style="width:60px;height:60px;border-radius:16px;background:#003087;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:28px;border:2px solid #D1A73B;">🔒</div>
         <h2 style="font-size:22px;font-weight:800;margin:0 0 8px;color:#1A1A2E;letter-spacing:-.01em;">Members only</h2>
-        <p style="font-size:14px;line-height:1.6;color:#5A6079;margin:0 0 24px;">The reading group notes are private to the DETAIL Lab. Sign in with GitHub — only collaborators on the content repository can view them.</p>
+        <p style="font-size:14px;line-height:1.6;color:#5A6079;margin:0 0 24px;">The reading group notes are private to the DETAIL Lab. Log in with GitHub to read and submit, or use the lab view password to read only.</p>
         <button onClick="{{ login }}" class="detail-ghbtn" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#0A1430;color:#fff;font-weight:700;font-size:15px;padding:14px 22px;border-radius:11px;border:none;cursor:pointer;font-family:inherit;">
           <span style="font-size:18px;">⌥</span> Log in with GitHub
         </button>
 
-        <div style="margin-top:16px;">
-          <span onClick="{{ toggleToken }}" style="cursor:pointer;font-size:12.5px;font-weight:600;color:#5A6079;border-bottom:1px dashed #B9C1D6;">Use an access token instead</span>
-        </div>
-        <sc-if value="{{ showToken }}">
-          <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px;text-align:left;">
-            <div style="font-size:12px;line-height:1.6;color:#5A6079;background:#F4F6FA;border:1px solid #E1E6F0;border-radius:10px;padding:12px 13px;">
-              <div style="font-weight:700;color:#1A1A2E;margin-bottom:6px;">Get a token (about 1 minute)</div>
-              <div>1. <a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=DETAIL%20Lab%20Paper%20Reading" target="_blank" rel="noopener" style="color:#2A6FDB;font-weight:700;border-bottom:1px solid rgba(42,111,219,.35);">Open GitHub to create a token ↗</a> (scope <code style="background:#EEF1F8;padding:0 4px;border-radius:4px;">repo</code> is pre-checked)</div>
-              <div>2. Scroll down, click <b>Generate token</b>, and copy it.</div>
-              <div>3. Paste it below and click Unlock.</div>
-              <div style="margin-top:6px;color:#8A90A6;">You must already be a collaborator on the content repo, or you'll see “No access”. The token stays in your browser only.</div>
-            </div>
-            <input type="password" value="{{ tokenInput }}" onInput="{{ onTokenInput }}" placeholder="ghp_… or github_pat_…" style="border:1px solid #D8DEEC;border-radius:9px;padding:10px 12px;font-size:13px;font-family:ui-monospace,monospace;color:#1A1A2E;background:#fff;outline:none;"/>
-            <button onClick="{{ unlockToken }}" style="background:#003087;color:#fff;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;">Unlock</button>
-          </div>
-        </sc-if>
-
-        <div style="margin-top:12px;">
-          <span onClick="{{ togglePw }}" style="cursor:pointer;font-size:12.5px;font-weight:600;color:#5A6079;border-bottom:1px dashed #B9C1D6;">Or view with a password</span>
-        </div>
+        <button onClick="{{ togglePw }}" style="width:100%;margin-top:12px;display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#003087;color:#fff;font-weight:700;font-size:15px;padding:14px 22px;border-radius:11px;border:none;cursor:pointer;font-family:inherit;">
+          <span style="font-size:18px;">🔑</span> View with a password
+        </button>
         <sc-if value="{{ showPw }}">
           <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px;text-align:left;">
             <div style="font-size:12px;line-height:1.6;color:#5A6079;background:#F4F6FA;border:1px solid #E1E6F0;border-radius:10px;padding:12px 13px;">Read-only access — enter the lab view password to browse the notes. You won't be able to submit in this mode.</div>
             <input type="password" value="{{ pwInput }}" onInput="{{ onPwInput }}" placeholder="View password" style="border:1px solid #D8DEEC;border-radius:9px;padding:10px 12px;font-size:13px;color:#1A1A2E;background:#fff;outline:none;"/>
-            <button onClick="{{ unlockPassword }}" style="background:#003087;color:#fff;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;">View notes</button>
+            <button onClick="{{ unlockPassword }}" style="background:#0A1430;color:#fff;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;">View notes</button>
           </div>
         </sc-if>
 
