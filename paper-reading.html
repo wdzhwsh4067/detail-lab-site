@@ -151,7 +151,7 @@
           <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#1F6B3B;font-weight:600;">🔓 Signed in — {{ memberLabel }}</div>
           <div style="display:flex;align-items:center;gap:12px;">
             <sc-if value="{{ canSubmit }}">
-              <button onClick="{{ toggleSubmit }}" style="display:inline-flex;align-items:center;gap:7px;background:#D1A73B;color:#1A1A2E;font-weight:700;font-size:13px;padding:9px 16px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;">➕ Submit a session</button>
+              <button onClick="{{ newSession }}" style="display:inline-flex;align-items:center;gap:7px;background:#D1A73B;color:#1A1A2E;font-weight:700;font-size:13px;padding:9px 16px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;">➕ Submit a session</button>
             </sc-if>
             <span onClick="{{ logout }}" style="cursor:pointer;font-size:13px;font-weight:600;color:#8A90A6;">Log out</span>
           </div>
@@ -164,14 +164,14 @@
           <div style="max-width:min(1680px,94vw);margin:0 auto;padding:22px 28px;">
             <div style="background:#F8F9FA;border:1px solid #E1E6F0;border-radius:16px;padding:26px;">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
-                <h2 style="font-size:19px;font-weight:800;margin:0;color:#1A1A2E;">➕ Submit a reading session</h2>
+                <h2 style="font-size:19px;font-weight:800;margin:0;color:#1A1A2E;">{{ submitPanelTitle }}</h2>
                 <span onClick="{{ toggleSubmit }}" style="cursor:pointer;color:#8A90A6;font-size:20px;line-height:1;">✕</span>
               </div>
-              <p style="font-size:13px;color:#5A6079;margin:0 0 20px;line-height:1.55;">Fill the table and commit — this writes a new markdown file to <code style="background:#EEF1F8;padding:1px 6px;border-radius:5px;">data/reading/</code> and updates the index, just like a Git commit. <strong style="color:#9B2330;">Works on the deployed site;</strong> the preview can't reach GitHub.</p>
+              <p style="font-size:13px;color:#5A6079;margin:0 0 20px;line-height:1.55;">Fill the form and commit — this saves a markdown file under <code style="background:#EEF1F8;padding:1px 6px;border-radius:5px;">data/reading/</code> and updates the index (a Git commit). You can edit a session again later from its <b>✏️ Edit</b> button.</p>
               <div class="detail-submit-grid" style="display:grid;grid-template-columns:1fr;gap:14px;">
                 <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Paper title *<input value="{{ fTitle }}" onInput="{{ onTitle }}" placeholder="Title of the paper" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
                 <label style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:#41485E;">Paper URL<input value="{{ fPaperUrl }}" onInput="{{ onPaperUrl }}" placeholder="https://…" style="border:1px solid #D8DEEC;border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:inherit;color:#1A1A2E;background:#fff;outline:none;"/></label>
-                <label style="display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:700;color:#41485E;">Author <span style="font-weight:500;color:#8A90A6;">(pick an author)</span>
+                <label style="display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:700;color:#41485E;">Author * <span style="font-weight:500;color:#8A90A6;">(required — pick one)</span>
                   <div style="display:flex;flex-wrap:wrap;gap:7px;">
                     <sc-for list="{{ tagOptions }}" as="opt" hint-placeholder-count="6">
                       <span onClick="{{ opt.onClick }}" style="cursor:pointer;font-size:12px;font-weight:700;padding:6px 13px;border-radius:20px;color:{{ opt.fg }};background:{{ opt.bg }};border:1px solid {{ opt.bd }};">{{ opt.label }}</span>
@@ -228,6 +228,9 @@
                   <span style="font-size:11px;font-weight:700;color:#003087;background:#EAF0FB;padding:3px 10px;border-radius:20px;">{{ t }}</span>
                 </sc-for>
                 <a href="{{ activePaperUrl }}" target="_blank" style="margin-left:auto;font-size:12.5px;font-weight:700;color:#2A6FDB;display:inline-flex;align-items:center;gap:5px;">Read the paper ↗</a>
+                <sc-if value="{{ canSubmit }}">
+                  <span onClick="{{ editActive }}" style="cursor:pointer;font-size:12.5px;font-weight:700;color:#9B2330;display:inline-flex;align-items:center;gap:4px;margin-left:14px;">✏️ Edit</span>
+                </sc-if>
               </div>
               {{ articleEl }}
             </main>
@@ -287,6 +290,7 @@ class Component extends DCLogic {
     showPw: false, pwInput: '', viewSession: null, deniedLogin: '',
     showSubmit: false, submitStatus: null, submitMsg: '',
     commentsCache: {}, commentInput: '', commentStatus: null, commentMsg: '',
+    editingId: null, editingFile: null, editingDate: null,
     form: { owner:'detail-vu', repo:'detail-lab-content', branch:'main', token:'',
             date:'', title:'', presenter:'', venue:'', tags:[], paperUrl:'', body:'' }
   };
@@ -546,26 +550,41 @@ class Component extends DCLogic {
   }
 
   // ── SUBMIT ─────────────────────────────────────────────
-  toggleSubmit(){ this.setState(s=>({ showSubmit: !s.showSubmit })); }
+  toggleSubmit(){ this.setState(s=>({ showSubmit: !s.showSubmit, editingId:null, editingFile:null, editingDate:null })); }
+  newSession(){ this.setState(s=>({ showSubmit:true, editingId:null, editingFile:null, editingDate:null, submitStatus:null, submitMsg:'', form:{ ...s.form, title:'', presenter:'', venue:'', tags:[], paperUrl:'', body:'' } })); }
+  async startEdit(session){
+    let body = '';
+    try { const res = await this.cget('data/reading/' + session.file); if(res.status===200){ const t = b64decode((await res.json()).content); const lines = t.replace(/\r\n/g,'\n').split('\n'); if(lines.length && /^#\s/.test(lines[0])) lines.shift(); while(lines.length && lines[0].trim()==='') lines.shift(); body = lines.join('\n'); } } catch(e){}
+    this.setState(s=>({ showSubmit:true, editingId: session.id, editingFile: session.file, editingDate: session.date, submitStatus:null, submitMsg:'',
+      form: { ...s.form, title: session.title||'', paperUrl: session.paperUrl||'', presenter: session.presenter||'', venue: session.venue||'', tags: Array.isArray(session.tags)?session.tags.slice():[], body } }));
+    if(typeof window!=='undefined'){ try { window.scrollTo({ top:0, behavior:'smooth' }); } catch(e){} }
+  }
   setField(k,v){ this.setState(s=>({ form: { ...s.form, [k]: v } })); }
   toggleTag(name){ this.setState(s=>{ const has=(s.form.tags||[]).includes(name); return { form: { ...s.form, tags: has ? [] : [ name ] } }; }); }
 
   async submitSession(){
     const f = this.state.form;
     if(!f.token || !f.title.trim() || !f.body.trim()){
-      this.setState({ submitStatus:'error', submitMsg:'Token, title and notes are required.' });
+      this.setState({ submitStatus:'error', submitMsg:'Title and notes are required.' });
       return;
     }
-    this.setState({ submitStatus:'working', submitMsg:'Committing…' });
+    if(!Array.isArray(f.tags) || f.tags.length===0){
+      this.setState({ submitStatus:'error', submitMsg:'Pick an author first.' });
+      return;
+    }
+    const editing = !!this.state.editingId;
+    this.setState({ submitStatus:'working', submitMsg: editing ? 'Saving…' : 'Committing…' });
     try {
       const enc = (str)=> btoa(unescape(encodeURIComponent(str)));
       const dec = (b64)=> decodeURIComponent(escape(atob((b64||'').replace(/\s/g,''))));
       const _d = new Date();
-      const date = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
-      const slug = (date + '-' + f.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')).slice(0,48);
-      const file = slug + '.md';
+      const today = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
+      const title = f.title.trim();
+      const slug = editing ? this.state.editingId : (today + '-' + title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')).slice(0,48);
+      const date = editing ? (this.state.editingDate || today) : today;
+      const file = editing ? this.state.editingFile : (slug + '.md');
       const tagsArr = Array.isArray(f.tags) ? f.tags : [];
-      const md = '# ' + f.title.trim() + '\n\n**Presenter:** ' + (f.presenter||'—') + ' · **Date:** ' + date + '\n**Venue:** ' + (f.venue||'—') + '\n\n' + f.body.trim() + '\n';
+      const md = '# ' + title + '\n\n' + f.body.trim() + '\n';
       const api = 'https://api.github.com/repos/' + f.owner + '/' + f.repo + '/contents/';
       const headers = { 'Authorization':'Bearer ' + f.token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' };
       const getJson = async (path)=>{
@@ -579,25 +598,31 @@ class Component extends DCLogic {
         if(!r.ok){ const j = await r.json().catch(()=>({})); const e = new Error((j && j.message) || ('HTTP ' + r.status)); e.status = r.status; throw e; }
         return r.json();
       };
-      // Write the markdown file (overwrite if a same-named draft exists from a failed retry).
+      // Write/overwrite the markdown file (fetch its sha first if it already exists).
       const existingMd = await getJson('data/reading/' + file);
-      await put('data/reading/' + file, { message:'Add reading session: ' + f.title.trim(), content: enc(md), branch: f.branch, ...(existingMd && existingMd.sha ? { sha: existingMd.sha } : {}) });
-      // Update the index with a FRESH sha; retry if the file changed under us (409/422).
+      await put('data/reading/' + file, { message:(editing?'Edit':'Add')+' reading session: ' + title, content: enc(md), branch: f.branch, ...(existingMd && existingMd.sha ? { sha: existingMd.sha } : {}) });
+      // Update the index with a FRESH sha; retry if it changed under us (409/422).
+      const entry = { id:slug, date:date, title:title, presenter:f.presenter||'', venue:f.venue||'', tags:tagsArr, file, paperUrl:f.paperUrl||'' };
       let done = false, lastErr;
       for(let attempt=0; attempt<3 && !done; attempt++){
         const idxJson = await getJson('data/reading/index.json');
         if(!idxJson) throw new Error('index.json not found');
         const arr = JSON.parse(dec(idxJson.content));
-        const list = Array.isArray(arr) ? arr.filter(x=> x && x.id !== slug) : []; // dedupe on retry
-        list.unshift({ id:slug, date:date, title:f.title.trim(), presenter:f.presenter||'', venue:f.venue||'', tags:tagsArr, file, paperUrl:f.paperUrl||'' });
+        let list = Array.isArray(arr) ? arr : [];
+        if(editing && list.some(x=> x && x.id===slug)){
+          list = list.map(x=> (x && x.id===slug) ? entry : x); // replace in place, keep order
+        } else {
+          list = list.filter(x=> x && x.id!==slug); list.unshift(entry); // new (or recover orphan)
+        }
         try {
-          await put('data/reading/index.json', { message:'Index reading session: ' + f.title.trim(), content: enc(JSON.stringify(list,null,2) + '\n'), sha: idxJson.sha, branch: f.branch });
+          await put('data/reading/index.json', { message:(editing?'Update':'Index')+' reading session: ' + title, content: enc(JSON.stringify(list,null,2) + '\n'), sha: idxJson.sha, branch: f.branch });
           done = true;
         } catch(e){ lastErr = e; if(e.status!==409 && e.status!==422) throw e; }
       }
       if(!done) throw new Error((lastErr && lastErr.message) || 'index conflict — please try again');
-      this.setState(s=>({ submitStatus:'success', submitMsg:'✓ Posted! Refresh to see it in the list.',
-        form: { ...s.form, date:'', title:'', presenter:'', venue:'', tags:[], paperUrl:'', body:'' } }));
+      this.setState(s=>{ const mc = { ...s.mdCache }; delete mc[slug]; return { submitStatus:'success', submitMsg: editing ? '✓ Saved!' : '✓ Posted!',
+        editingId:null, editingFile:null, editingDate:null, mdCache: mc,
+        form: { ...s.form, date:'', title:'', presenter:'', venue:'', tags:[], paperUrl:'', body:'' } }; });
       this.loadIndex();
     } catch(e){
       this.setState({ submitStatus:'error', submitMsg:'⚠ ' + (e.message || 'Submit failed (the preview sandbox cannot reach GitHub).') });
@@ -634,7 +659,8 @@ class Component extends DCLogic {
           ? React.createElement('div', { className:'detail-mobile-body' },
               React.createElement('div', { style:{ display:'flex', flexWrap:'wrap', gap:'6px', alignItems:'center', marginBottom:'12px' } },
                 ...((s.tags||[]).map((t,ti)=> React.createElement('span', { key:'t'+ti, style:{ fontSize:'10.5px', fontWeight:700, color:'#003087', background:'#EAF0FB', padding:'3px 9px', borderRadius:'20px' } }, t))),
-                (s.paperUrl ? React.createElement('a', { href:s.paperUrl, target:'_blank', rel:'noopener', style:{ marginLeft:'auto', fontSize:'12px', fontWeight:700, color:'#2A6FDB' } }, 'Read the paper ↗') : null)
+                (s.paperUrl ? React.createElement('a', { href:s.paperUrl, target:'_blank', rel:'noopener', style:{ marginLeft:'auto', fontSize:'12px', fontWeight:700, color:'#2A6FDB' } }, 'Read the paper ↗') : null),
+                (this.state.auth==='authorized' ? React.createElement('span', { onClick:()=>this.startEdit(s), style:{ cursor:'pointer', marginLeft: (s.paperUrl?'14px':'auto'), fontSize:'12px', fontWeight:700, color:'#9B2330' } }, '✏️ Edit') : null)
               ),
               (smd
                 ? React.createElement('div', { className:'detail-md', dangerouslySetInnerHTML:{ __html: this.parseMd(smd) } })
@@ -699,8 +725,11 @@ class Component extends DCLogic {
 
       showSubmit: this.state.showSubmit,
       toggleSubmit: ()=>this.toggleSubmit(),
+      newSession: ()=>this.newSession(),
+      editActive: ()=>{ if(active) this.startEdit(active); },
+      submitPanelTitle: this.state.editingId ? '✏️ Edit reading session' : '➕ Submit a reading session',
       onSubmit: ()=>this.submitSession(),
-      submitLabel: this.state.submitStatus==='working' ? 'Committing…' : 'Commit session',
+      submitLabel: this.state.submitStatus==='working' ? (this.state.editingId?'Saving…':'Committing…') : (this.state.editingId?'Save changes':'Commit session'),
       submitMsg: this.state.submitMsg,
       hasSubmitMsg: !!this.state.submitMsg,
       submitColor,
